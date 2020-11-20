@@ -1,3 +1,4 @@
+import * as Phaser from 'phaser'
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
     super({ key: 'PreloadScene' })
@@ -5,6 +6,7 @@ export default class PreloadScene extends Phaser.Scene {
 
   preload() {
     this.load.image('phaser-logo', 'assets/img/phaser-logo.png')
+    this.load.image('witch', ['assets/img/witch1.png', 'assets/img/norm.png'])
   }
 
   create() {

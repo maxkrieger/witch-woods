@@ -1,27 +1,40 @@
-import PhaserLogo from '../objects/phaserLogo'
-import FpsText from '../objects/fpsText'
+import Witch from "../objects/witch";
 
 export default class MainScene extends Phaser.Scene {
-  fpsText: Phaser.GameObjects.Text
-
+  witches: { [id: string]: Witch };
   constructor() {
-    super({ key: 'MainScene' })
+    super({ key: "MainScene" });
+    this.witches = {};
+  }
+  preload() {
+    this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
   }
 
   create() {
-    new PhaserLogo(this, this.cameras.main.width / 2, 0)
-    this.fpsText = new FpsText(this)
-
-    // display the Phaser.VERSION
+    this.cameras.main.setBounds(0, 0, 2752, 1080 * 2);
+    this.physics.world.setBounds(0, 0, 2752, 1080 * 2);
+    this.add.image(0, 0, "bg").setOrigin(0).setPipeline("Light2D");
     this.add
-      .text(this.cameras.main.width - 15, 15, `Phaser v${Phaser.VERSION}`, {
-        color: '#000000',
-        fontSize: 24
-      })
-      .setOrigin(1, 0)
+      .image(688, 0, "bg")
+      .setFlipX(true)
+      .setOrigin(0)
+      .setPipeline("Light2D");
+    this.add.image(1376, 0, "bg").setOrigin(0).setPipeline("Light2D");
+
+    this.witches["bla"] = new Witch(
+      this,
+      this.cameras.main.width / 2,
+      this.cameras.main.height / 2,
+      "bla",
+      true
+    );
+    this.cameras.main.startFollow(this.witches["bla"], true, 0.05, 0.05);
+
+    this.lights.enable().setAmbientColor(0x808080);
+    this.lights.addLight(200, 200, 100, 0xff0000, 8);
   }
 
   update() {
-    this.fpsText.update()
+    Object.values(this.witches).forEach((witch: Witch) => {});
   }
 }
