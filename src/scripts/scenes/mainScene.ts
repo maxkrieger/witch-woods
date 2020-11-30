@@ -90,11 +90,25 @@ export default class MainScene extends Phaser.Scene {
   setPlayerY = (v: number) => () => {
     if (v !== 0 || (!this.cursor.down?.isDown && !this.cursor.up?.isDown)) {
       this.gameState.witches["bla"].setVelocityY(v);
+      if (v > 0) {
+        this.gameState.witches["bla"].anims.play("blue_down", false);
+      } else if (v < 0) {
+        this.gameState.witches["bla"].anims.play("blue_up", false);
+      } else if (v === 0) {
+        this.gameState.witches["bla"].anims.stop();
+      }
     }
   };
-  setPlayerX = (v: number) => () => {
+  setPlayerX = (v: number) => (evt: any) => {
     if (v !== 0 || (!this.cursor.left?.isDown && !this.cursor.right?.isDown)) {
       this.gameState.witches["bla"].setVelocityX(v);
+      if (v > 0) {
+        this.gameState.witches["bla"].anims.play("blue_right", false);
+      } else if (v < 0) {
+        this.gameState.witches["bla"].anims.play("blue_left", false);
+      } else if (v === 0) {
+        this.gameState.witches["bla"].anims.stop();
+      }
     }
   };
 
