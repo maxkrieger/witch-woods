@@ -1,16 +1,19 @@
-import * as Phaser from 'phaser'
+import * as Phaser from "phaser";
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
-    super({ key: 'PreloadScene' })
+    super({ key: "PreloadScene" });
   }
 
   preload() {
-    this.load.image('phaser-logo', 'assets/img/phaser-logo.png')
-    this.load.image('witch', ['assets/img/witch1.png', 'assets/img/norm.png'])
+    this.load.image("witch", ["assets/img/witch1.png", "assets/img/norm.png"]);
+    this.load.image("pentagram", [
+      "assets/img/summon_circle.png",
+      "assets/img/norm.png",
+    ]);
   }
 
   create() {
-    this.scene.start('MainScene')
+    this.scene.start("MainScene");
 
     /**
      * This is how you would dynamically import the mainScene class (with code splitting),

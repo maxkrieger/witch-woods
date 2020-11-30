@@ -1,5 +1,3 @@
-import { Physics } from "phaser";
-
 export default class Witch extends Phaser.Physics.Arcade.Sprite {
   isMe: boolean;
   id: string;
@@ -15,9 +13,9 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     this.id = id;
     scene.add.existing(this);
     scene.physics.add.existing(this);
+    this.body.enable = true;
     this.setCollideWorldBounds(true);
     this.setPipeline("Lighting2D");
   }
-  setDestination = (x, y: number) => {};
   update = () => {};
 }

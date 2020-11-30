@@ -1,11 +1,25 @@
+import Pentagram from "../objects/pentagram";
 import Witch from "../objects/witch";
 
-export default class MainScene extends Phaser.Scene {
+interface MaterialReq {
+  materialType: string;
+  quantityNeeded: number;
+  quantityHave: number;
+}
+interface Team {
+  materials: MaterialReq[];
+}
+interface GameState {
   witches: { [id: string]: Witch };
+  teams: Team[];
+}
+
+export default class MainScene extends Phaser.Scene {
+  gameState: GameState;
   cursor: Phaser.Types.Input.Keyboard.CursorKeys;
   constructor() {
     super({ key: "MainScene" });
-    this.witches = {};
+    this.gameState = { teams: [], witches: {} };
   }
   preload() {
     this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
@@ -24,7 +38,9 @@ export default class MainScene extends Phaser.Scene {
 
     this.cursor = this.input.keyboard.createCursorKeys();
 
-    this.witches["bla"] = new Witch(
+    const pentagram = new Pentagram(this, 1200, 400, "red_team");
+
+    this.gameState.witches["bla"] = new Witch(
       this,
       this.cameras.main.width / 2,
       this.cameras.main.height / 2,
@@ -32,7 +48,7 @@ export default class MainScene extends Phaser.Scene {
       true
     );
     this.cameras.main.startFollow(
-      this.witches["bla"],
+      this.gameState.witches["bla"],
       true,
       0.05,
       0.05,
@@ -51,21 +67,31 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.left?.on("up", this.setPlayerX(0));
     this.cursor.right?.on("down", this.setPlayerX(200));
     this.cursor.right?.on("up", this.setPlayerX(0));
+
+    this.physics.add.collider(
+      this.gameState.witches["bla"],
+      pentagram,
+      this.collided
+    );
   }
+
+  collided = () => {
+    this.gameState.witches["bla"].setVelocity(0, 0);
+  };
 
   setPlayerY = (v: number) => () => {
     if (v !== 0 || (!this.cursor.down?.isDown && !this.cursor.up?.isDown)) {
-      this.witches["bla"].setVelocityY(v);
+      this.gameState.witches["bla"].setVelocityY(v);
     }
   };
   setPlayerX = (v: number) => () => {
     if (v !== 0 || (!this.cursor.left?.isDown && !this.cursor.right?.isDown)) {
-      this.witches["bla"].setVelocityX(v);
+      this.gameState.witches["bla"].setVelocityX(v);
     }
   };
 
   update() {
-    Object.values(this.witches).forEach((witch: Witch) => {
+    Object.values(this.gameState.witches).forEach((witch: Witch) => {
       witch.update();
     });
   }
