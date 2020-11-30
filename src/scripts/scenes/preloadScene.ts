@@ -5,11 +5,14 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
+    // TODO: spritesheet
     this.load.image("witch", ["assets/img/witch1.png", "assets/img/norm.png"]);
     this.load.image("pentagram", [
       "assets/img/summon_circle.png",
       "assets/img/norm.png",
     ]);
+
+    this.load.image("mush1", ["assets/img/mush1.png", "assets/img/norm.png"]);
   }
 
   create() {

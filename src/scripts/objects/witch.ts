@@ -1,6 +1,7 @@
 export default class Witch extends Phaser.Physics.Arcade.Sprite {
   isMe: boolean;
   id: string;
+  facing: "left" | "right" | "up" | "down";
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -9,6 +10,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     isMe: boolean
   ) {
     super(scene, x, y, "witch");
+    this.facing = "right";
     this.isMe = isMe;
     this.id = id;
     scene.add.existing(this);

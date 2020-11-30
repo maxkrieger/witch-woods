@@ -10,4 +10,6 @@ export default class Pentagram extends Phaser.Physics.Arcade.Sprite {
     this.team = team;
     this.setPipeline("Lighting2D");
   }
+
+  update = () => {};
 }

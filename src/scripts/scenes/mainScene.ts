@@ -1,3 +1,4 @@
+import Mushroom from "../objects/mushroom";
 import Pentagram from "../objects/pentagram";
 import Witch from "../objects/witch";
 
@@ -9,8 +10,13 @@ interface MaterialReq {
 interface Team {
   materials: MaterialReq[];
 }
+
+interface Resource {
+  sprite: Phaser.Physics.Arcade.Sprite;
+}
 interface GameState {
   witches: { [id: string]: Witch };
+  resources: Resource[];
   teams: Team[];
 }
 
@@ -19,7 +25,7 @@ export default class MainScene extends Phaser.Scene {
   cursor: Phaser.Types.Input.Keyboard.CursorKeys;
   constructor() {
     super({ key: "MainScene" });
-    this.gameState = { teams: [], witches: {} };
+    this.gameState = { teams: [], witches: {}, resources: [] };
   }
   preload() {
     this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
@@ -39,6 +45,9 @@ export default class MainScene extends Phaser.Scene {
     this.cursor = this.input.keyboard.createCursorKeys();
 
     const pentagram = new Pentagram(this, 1200, 400, "red_team");
+    this.gameState.resources.push({
+      sprite: new Mushroom(this, 200, 200, "m1"),
+    });
 
     this.gameState.witches["bla"] = new Witch(
       this,
@@ -56,8 +65,7 @@ export default class MainScene extends Phaser.Scene {
       100
     );
 
-    this.lights.enable().setAmbientColor(0x808080);
-    this.lights.addLight(200, 200, 100, 0xff0000, 8);
+    this.lights.enable().setAmbientColor(0x555555);
 
     this.cursor.down?.on("down", this.setPlayerY(200));
     this.cursor.down?.on("up", this.setPlayerY(0));
@@ -93,6 +101,9 @@ export default class MainScene extends Phaser.Scene {
   update() {
     Object.values(this.gameState.witches).forEach((witch: Witch) => {
       witch.update();
+    });
+    this.gameState.resources.forEach(({ sprite }) => {
+      sprite.update();
     });
   }
 }
