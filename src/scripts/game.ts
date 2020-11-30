@@ -1,6 +1,7 @@
 import "phaser";
 import MainScene from "./scenes/mainScene";
 import PreloadScene from "./scenes/preloadScene";
+import PhaserNavMeshPlugin from "./plugins/phaser-navmesh.min";
 
 const DEFAULT_WIDTH = 1280;
 const DEFAULT_HEIGHT = 720;
@@ -19,6 +20,11 @@ const config: Phaser.Types.Core.GameConfig = {
     height: DEFAULT_HEIGHT,
   },
   scene: [PreloadScene, MainScene],
+  plugins: {
+    scene: [
+      {key: "NavMeshPlugin", plugin: PhaserNavMeshPlugin, mapping: "navMeshPlugin", start: true}
+    ]
+  },
   physics: {
     default: "arcade",
     arcade: {
