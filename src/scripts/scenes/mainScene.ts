@@ -109,13 +109,13 @@ export default class MainScene extends Phaser.Scene {
 
     this.lights.enable().setAmbientColor(0x555555);
 
-    this.cursor.down?.on("down", this.setPlayerY(200));
+    this.cursor.down?.on("down", this.setPlayerY(300));
     this.cursor.down?.on("up", this.setPlayerY(0));
-    this.cursor.up?.on("down", this.setPlayerY(-200));
+    this.cursor.up?.on("down", this.setPlayerY(-300));
     this.cursor.up?.on("up", this.setPlayerY(0));
-    this.cursor.left?.on("down", this.setPlayerX(-200));
+    this.cursor.left?.on("down", this.setPlayerX(-300));
     this.cursor.left?.on("up", this.setPlayerX(0));
-    this.cursor.right?.on("down", this.setPlayerX(200));
+    this.cursor.right?.on("down", this.setPlayerX(300));
     this.cursor.right?.on("up", this.setPlayerX(0));
 
     this.physics.add.collider(this.gameState.witches["bla"], pentagram);
@@ -125,9 +125,9 @@ export default class MainScene extends Phaser.Scene {
     if (v !== 0 || (!this.cursor.down?.isDown && !this.cursor.up?.isDown)) {
       this.gameState.witches["bla"].setVelocityY(v);
       if (v > 0) {
-        this.gameState.witches["bla"].anims.play("blue_down", false);
+        this.gameState.witches["bla"].anims.play("blue_down", true);
       } else if (v < 0) {
-        this.gameState.witches["bla"].anims.play("blue_up", false);
+        this.gameState.witches["bla"].anims.play("blue_up", true);
       } else if (v === 0 && this.cursor.left?.isUp && this.cursor.right?.isUp) {
         this.gameState.witches["bla"].anims.stop();
       }
@@ -137,9 +137,9 @@ export default class MainScene extends Phaser.Scene {
     if (v !== 0 || (!this.cursor.left?.isDown && !this.cursor.right?.isDown)) {
       this.gameState.witches["bla"].setVelocityX(v);
       if (v > 0) {
-        this.gameState.witches["bla"].anims.play("blue_right", false);
+        this.gameState.witches["bla"].anims.play("blue_right", true);
       } else if (v < 0) {
-        this.gameState.witches["bla"].anims.play("blue_left", false);
+        this.gameState.witches["bla"].anims.play("blue_left", true);
       } else if (v === 0 && this.cursor.down?.isUp && this.cursor.up?.isUp) {
         this.gameState.witches["bla"].anims.stop();
       }

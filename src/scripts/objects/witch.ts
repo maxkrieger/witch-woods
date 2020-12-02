@@ -29,6 +29,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
         end: 1,
       }),
       repeat: -1,
+      frameRate: 10,
     });
     scene.anims.create({
       key: "blue_left",
@@ -37,6 +38,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
         end: 3,
       }),
       repeat: -1,
+      frameRate: 10,
     });
     scene.anims.create({
       key: "blue_up",
@@ -45,6 +47,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
         end: 6,
       }),
       repeat: -1,
+      frameRate: 10,
     });
     scene.anims.create({
       key: "blue_down",
@@ -53,6 +56,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
         end: 10,
       }),
       repeat: -1,
+      frameRate: 10,
     });
   }
   update = () => {};
