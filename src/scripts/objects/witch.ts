@@ -16,6 +16,10 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.body.enable = true;
+    // this.setPipeline("glowy");
+
+    // TODO: set collision
+    // this.body.setSize()
     this.setCollideWorldBounds(true);
 
     scene.anims.create({
