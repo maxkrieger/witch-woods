@@ -81,6 +81,10 @@ export default class MainScene extends Phaser.Scene {
     this.add.image(1376, 0, "bg").setOrigin(0).setPipeline("Light2D");
 
     this.cursor = this.input.keyboard.createCursorKeys();
+    this.cursor.down?.setEmitOnRepeat(true);
+    this.cursor.up?.setEmitOnRepeat(true);
+    this.cursor.right?.setEmitOnRepeat(true);
+    this.cursor.left?.setEmitOnRepeat(true);
 
     const pentagram = new Pentagram(this, 1200, 400, "red_team");
     this.gameState.resources.push({
@@ -114,16 +118,8 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.right?.on("down", this.setPlayerX(200));
     this.cursor.right?.on("up", this.setPlayerX(0));
 
-    this.physics.add.collider(
-      this.gameState.witches["bla"],
-      pentagram,
-      this.collided
-    );
+    this.physics.add.collider(this.gameState.witches["bla"], pentagram);
   }
-
-  collided = () => {
-    this.gameState.witches["bla"].setVelocity(0, 0);
-  };
 
   setPlayerY = (v: number) => () => {
     if (v !== 0 || (!this.cursor.down?.isDown && !this.cursor.up?.isDown)) {
