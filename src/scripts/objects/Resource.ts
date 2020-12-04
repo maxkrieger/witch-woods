@@ -30,7 +30,7 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
       callback: this.channelTick,
       callbackScope: this,
       loop: true,
-      paused: true,
+      paused: false,
     });
   }
   drawHealth = () => {
@@ -67,18 +67,21 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
   };
   setChanneling = (channeling: boolean) => {
     this.channeling = channeling;
-    this.channelingInterval.paused = !channeling;
-    // set timer
   };
-  /**
-   * @returns: true if despawn
-   */
+
   channelTick = () => {
-    if (this.health <= 0) {
-      return true;
+    if (this.channeling) {
+      if (this.health <= 0) {
+        console.log("despawn!");
+        return;
+      }
+      this.health--;
+      this.drawHealth();
+    } else {
+      if (this.health < this.maxHealth) {
+        this.health++;
+        this.drawHealth();
+      }
     }
-    this.health--;
-    this.drawHealth();
-    return false;
   };
 }
