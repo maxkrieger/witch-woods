@@ -26,7 +26,11 @@ export default class MainScene extends Phaser.Scene {
   pipelineInstance: Phaser.Renderer.WebGL.WebGLPipeline;
   constructor() {
     super({ key: "MainScene" });
-    this.gameState = { teams: [], witches: {}, resources: [] };
+    this.gameState = {
+      teams: [],
+      witches: {},
+      resources: [],
+    };
   }
   preload() {
     this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
@@ -90,6 +94,9 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.resources.push({
       sprite: new Mushroom(this, 200, 200, "m1"),
     });
+    this.gameState.resources.push({
+      sprite: new Mushroom(this, 800, 400, "m2"),
+    });
 
     this.gameState.witches["bla"] = new Witch(
       this,
@@ -146,6 +153,12 @@ export default class MainScene extends Phaser.Scene {
     }
   };
 
+  setFocusedResource = (id: string | null) => {
+    if (this.registry.get("focusedResource") !== id) {
+      this.registry.set("focusedResource", id);
+    }
+  };
+
   update(time: number) {
     // TODO: https://phaser.io/examples/v3/view/input/mouse/click-sprite
     this.pipelineInstance.setFloat1("time", time / 1000);
@@ -155,14 +168,21 @@ export default class MainScene extends Phaser.Scene {
     this.gameState.resources.forEach(({ sprite }) => {
       sprite.update();
     });
-    const inRange = this.gameState.resources.filter(
-      ({ sprite }) =>
-        Phaser.Math.Distance.Between(
+    const inRange = this.gameState.resources
+      .map(({ sprite }) => ({
+        dist: Phaser.Math.Distance.Between(
           this.gameState.witches["bla"].x,
           this.gameState.witches["bla"].y,
           sprite.x,
           sprite.y
-        ) <= 200
-    );
+        ),
+        id: (sprite as any).id,
+      }))
+      .sort((a, b) => a.dist - b.dist);
+    if (inRange.length > 0) {
+      this.setFocusedResource(inRange[0].dist <= 200 ? inRange[0].id : null);
+    } else {
+      this.setFocusedResource(null);
+    }
   }
 }
