@@ -1,5 +1,7 @@
 import Mushroom from "../objects/mushroom";
 import Pentagram from "../objects/pentagram";
+import Resource from "../objects/Resource";
+import { ResourceSprite } from "../objects/types";
 import Witch from "../objects/witch";
 
 interface MaterialReq {
@@ -85,6 +87,18 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.up?.setEmitOnRepeat(true);
     this.cursor.right?.setEmitOnRepeat(true);
     this.cursor.left?.setEmitOnRepeat(true);
+    this.cursor.space?.setEmitOnRepeat(false);
+
+    this.cursor.space?.on("down", this.setChanneling(true));
+    this.cursor.space?.on("up", this.setChanneling(false));
+    this.cursor.down?.on("down", this.setPlayerY(300));
+    this.cursor.down?.on("up", this.setPlayerY(0));
+    this.cursor.up?.on("down", this.setPlayerY(-300));
+    this.cursor.up?.on("up", this.setPlayerY(0));
+    this.cursor.left?.on("down", this.setPlayerX(-300));
+    this.cursor.left?.on("up", this.setPlayerX(0));
+    this.cursor.right?.on("down", this.setPlayerX(300));
+    this.cursor.right?.on("up", this.setPlayerX(0));
 
     const pentagram = new Pentagram(this, 1200, 400, "red_team");
 
@@ -106,16 +120,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.lights.enable().setAmbientColor(0x555555);
 
-    this.cursor.down?.on("down", this.setPlayerY(300));
-    this.cursor.down?.on("up", this.setPlayerY(0));
-    this.cursor.up?.on("down", this.setPlayerY(-300));
-    this.cursor.up?.on("up", this.setPlayerY(0));
-    this.cursor.left?.on("down", this.setPlayerX(-300));
-    this.cursor.left?.on("up", this.setPlayerX(0));
-    this.cursor.right?.on("down", this.setPlayerX(300));
-    this.cursor.right?.on("up", this.setPlayerX(0));
-
-    this.physics.add.collider(this.gameObjects.sprites["bla"], pentagram);
+    // this.physics.add.collider(this.gameObjects.sprites["bla"], pentagram);
     this.spawnResources();
   }
 
@@ -124,6 +129,13 @@ export default class MainScene extends Phaser.Scene {
     this.gameObjects.resourceIDs.push("m1");
     this.gameObjects.sprites["m2"] = new Mushroom(this, 800, 200, "m2");
     this.gameObjects.resourceIDs.push("m2");
+  };
+
+  setChanneling = (channeling: boolean) => () => {
+    const focused = this.registry.get("focusedResource");
+    if (focused !== null) {
+      (this.gameObjects.sprites[focused] as Resource).setChanneling(channeling);
+    }
   };
 
   setPlayerY = (v: number) => () => {
@@ -154,6 +166,7 @@ export default class MainScene extends Phaser.Scene {
 
   setFocusedResource = (id: string | null) => {
     if (this.registry.get("focusedResource") !== id) {
+      this.setChanneling(false);
       this.registry.set("focusedResource", id);
     }
   };
@@ -177,7 +190,6 @@ export default class MainScene extends Phaser.Scene {
       }))
       .sort((a, b) => a.dist - b.dist);
     if (inRange.length > 0) {
-      console.log("ye");
       this.setFocusedResource(inRange[0].dist <= 200 ? inRange[0].id : null);
     } else {
       this.setFocusedResource(null);
