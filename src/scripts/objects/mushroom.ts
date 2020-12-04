@@ -11,5 +11,6 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
   }
   update = () => {
     //   check proximity
+    // this.scene.registry`
   };
 }
