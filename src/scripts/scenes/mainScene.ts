@@ -10,26 +10,22 @@ interface MaterialReq {
 interface Team {
   materials: MaterialReq[];
 }
-
-interface Resource {
-  sprite: Phaser.Physics.Arcade.Sprite;
-}
-interface GameState {
-  witches: { [id: string]: Witch };
-  resources: Resource[];
-  teams: Team[];
+interface GameObjects {
+  witchIDs: string[];
+  resourceIDs: string[];
+  sprites: { [id: string]: Phaser.Physics.Arcade.Sprite };
 }
 
 export default class MainScene extends Phaser.Scene {
-  gameState: GameState;
+  gameObjects: GameObjects;
   cursor: Phaser.Types.Input.Keyboard.CursorKeys;
   pipelineInstance: Phaser.Renderer.WebGL.WebGLPipeline;
   constructor() {
     super({ key: "MainScene" });
-    this.gameState = {
-      teams: [],
-      witches: {},
-      resources: [],
+    this.gameObjects = {
+      witchIDs: [],
+      resourceIDs: [],
+      sprites: {},
     };
   }
   preload() {
@@ -91,14 +87,8 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.left?.setEmitOnRepeat(true);
 
     const pentagram = new Pentagram(this, 1200, 400, "red_team");
-    this.gameState.resources.push({
-      sprite: new Mushroom(this, 200, 200, "m1"),
-    });
-    this.gameState.resources.push({
-      sprite: new Mushroom(this, 800, 400, "m2"),
-    });
 
-    this.gameState.witches["bla"] = new Witch(
+    this.gameObjects.sprites["bla"] = new Witch(
       this,
       this.cameras.main.width / 2,
       this.cameras.main.height / 2,
@@ -106,7 +96,7 @@ export default class MainScene extends Phaser.Scene {
       true
     );
     this.cameras.main.startFollow(
-      this.gameState.witches["bla"],
+      this.gameObjects.sprites["bla"],
       true,
       0.05,
       0.05,
@@ -125,30 +115,39 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.right?.on("down", this.setPlayerX(300));
     this.cursor.right?.on("up", this.setPlayerX(0));
 
-    this.physics.add.collider(this.gameState.witches["bla"], pentagram);
+    this.physics.add.collider(this.gameObjects.sprites["bla"], pentagram);
+    this.spawnResources();
   }
+
+  spawnResources = () => {
+    this.gameObjects.sprites["m1"] = new Mushroom(this, 200, 200, "m1");
+    this.gameObjects.resourceIDs.push("m1");
+    this.gameObjects.sprites["m2"] = new Mushroom(this, 800, 200, "m2");
+    this.gameObjects.resourceIDs.push("m2");
+  };
 
   setPlayerY = (v: number) => () => {
     if (v !== 0 || (!this.cursor.down?.isDown && !this.cursor.up?.isDown)) {
-      this.gameState.witches["bla"].setVelocityY(v);
+      this.gameObjects.sprites["bla"].setVelocityY(v);
       if (v > 0) {
-        this.gameState.witches["bla"].anims.play("blue_down", true);
+        this.gameObjects.sprites["bla"].anims.play("blue_down", true);
       } else if (v < 0) {
-        this.gameState.witches["bla"].anims.play("blue_up", true);
+        this.gameObjects.sprites["bla"].anims.play("blue_up", true);
       } else if (v === 0 && this.cursor.left?.isUp && this.cursor.right?.isUp) {
-        this.gameState.witches["bla"].anims.stop();
+        this.gameObjects.sprites["bla"].anims.stop();
       }
     }
   };
+
   setPlayerX = (v: number) => () => {
     if (v !== 0 || (!this.cursor.left?.isDown && !this.cursor.right?.isDown)) {
-      this.gameState.witches["bla"].setVelocityX(v);
+      this.gameObjects.sprites["bla"].setVelocityX(v);
       if (v > 0) {
-        this.gameState.witches["bla"].anims.play("blue_right", true);
+        this.gameObjects.sprites["bla"].anims.play("blue_right", true);
       } else if (v < 0) {
-        this.gameState.witches["bla"].anims.play("blue_left", true);
+        this.gameObjects.sprites["bla"].anims.play("blue_left", true);
       } else if (v === 0 && this.cursor.down?.isUp && this.cursor.up?.isUp) {
-        this.gameState.witches["bla"].anims.stop();
+        this.gameObjects.sprites["bla"].anims.stop();
       }
     }
   };
@@ -162,24 +161,23 @@ export default class MainScene extends Phaser.Scene {
   update(time: number) {
     // TODO: https://phaser.io/examples/v3/view/input/mouse/click-sprite
     this.pipelineInstance.setFloat1("time", time / 1000);
-    Object.values(this.gameState.witches).forEach((witch: Witch) => {
-      witch.update();
-    });
-    this.gameState.resources.forEach(({ sprite }) => {
+    Object.values(this.gameObjects.sprites).forEach((sprite) => {
       sprite.update();
     });
-    const inRange = this.gameState.resources
-      .map(({ sprite }) => ({
+
+    const inRange = this.gameObjects.resourceIDs
+      .map((id) => ({
         dist: Phaser.Math.Distance.Between(
-          this.gameState.witches["bla"].x,
-          this.gameState.witches["bla"].y,
-          sprite.x,
-          sprite.y
+          this.gameObjects.sprites["bla"].x,
+          this.gameObjects.sprites["bla"].y,
+          this.gameObjects.sprites[id].x,
+          this.gameObjects.sprites[id].y
         ),
-        id: (sprite as any).id,
+        id,
       }))
       .sort((a, b) => a.dist - b.dist);
     if (inRange.length > 0) {
+      console.log("ye");
       this.setFocusedResource(inRange[0].dist <= 200 ? inRange[0].id : null);
     } else {
       this.setFocusedResource(null);

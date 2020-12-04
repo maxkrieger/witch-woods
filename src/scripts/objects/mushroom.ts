@@ -11,6 +11,7 @@ export default class Mushroom extends Phaser.Physics.Arcade.Sprite {
     this.displayHeight = 120;
     this.id = id;
     this.scene.registry.events.on("changedata", this.dataChange);
+    this.scene.registry.events.on("setdata", this.dataChange);
     this.healthVisible = false;
     this.health = Mushroom.maxHealth;
     this.healthBar = new Phaser.GameObjects.Graphics(scene);
