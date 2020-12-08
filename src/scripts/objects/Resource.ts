@@ -12,6 +12,7 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
     y: number,
     sprite: string,
     id: string,
+    resourceType: string,
     maxHealth: number
   ) {
     super(scene, x, y, sprite);
@@ -68,7 +69,9 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
   setChanneling = (channeling: boolean) => {
     this.channeling = channeling;
   };
-
+  /**
+   * performs server effect
+   */
   channelTick = () => {
     if (this.channeling) {
       if (this.health <= 0) {

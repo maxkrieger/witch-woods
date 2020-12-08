@@ -1,21 +1,14 @@
+import { InventoryEntry } from "../../../server/gamestate";
 import Mushroom from "../objects/mushroom";
 import Pentagram from "../objects/pentagram";
 import Resource from "../objects/Resource";
-import { ResourceSprite } from "../objects/types";
 import Witch from "../objects/witch";
 
-interface MaterialReq {
-  materialType: string;
-  quantityNeeded: number;
-  quantityHave: number;
-}
-interface Team {
-  materials: MaterialReq[];
-}
 interface GameObjects {
   witchIDs: string[];
   resourceIDs: string[];
   sprites: { [id: string]: Phaser.Physics.Arcade.Sprite };
+  inventory: InventoryEntry[];
 }
 
 export default class MainScene extends Phaser.Scene {
@@ -28,6 +21,7 @@ export default class MainScene extends Phaser.Scene {
       witchIDs: [],
       resourceIDs: [],
       sprites: {},
+      inventory: [],
     };
   }
   preload() {
@@ -74,13 +68,9 @@ export default class MainScene extends Phaser.Scene {
   create() {
     this.cameras.main.setBounds(0, 0, 5000, 5000);
     this.physics.world.setBounds(0, 0, 5000, 5000);
-    this.add.image(0, 0, "bg").setOrigin(0).setPipeline("Light2D");
-    this.add
-      .image(688, 0, "bg")
-      .setFlipX(true)
-      .setOrigin(0)
-      .setPipeline("Light2D");
-    this.add.image(1376, 0, "bg").setOrigin(0).setPipeline("Light2D");
+    this.add.image(0, 0, "bg").setOrigin(0);
+    this.add.image(688, 0, "bg").setFlipX(true).setOrigin(0);
+    this.add.image(1376, 0, "bg").setOrigin(0);
 
     this.cursor = this.input.keyboard.createCursorKeys();
     this.cursor.down?.setEmitOnRepeat(true);
