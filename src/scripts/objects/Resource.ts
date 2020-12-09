@@ -6,6 +6,7 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
   healthBar: Phaser.GameObjects.Graphics;
   channeling: boolean;
   channelingInterval: Phaser.Time.TimerEvent;
+  isResource = true;
   constructor(
     scene: Phaser.Scene,
     x,
