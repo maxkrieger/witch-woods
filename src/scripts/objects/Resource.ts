@@ -1,4 +1,4 @@
-import { ResourceDefinition, ResourceType } from "../../gamestate";
+import { GameObject, ResourceDefinition, ResourceType } from "../../gamestate";
 
 export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
   id: string;
@@ -89,4 +89,6 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
       }
     }
   };
+
+  onUpdate = (resource: GameObject) => {};
 }

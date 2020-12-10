@@ -1,10 +1,11 @@
-import { Player } from "../../gamestate";
+import { Facing, Player } from "../../gamestate";
 
 export default class Witch extends Phaser.Physics.Arcade.Sprite {
   isMe: boolean;
   id: string;
-  facing: "left" | "right" | "up" | "down";
   currentTween?: Phaser.Tweens.Tween;
+  facing: Facing;
+  moving: boolean;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -13,7 +14,6 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     isMe: boolean
   ) {
     super(scene, x, y, "witch_blue");
-    this.facing = "right";
     this.isMe = isMe;
     this.id = id;
     scene.add.existing(this);
@@ -24,6 +24,8 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     // TODO: set collision
     // this.body.setSize()
     this.setCollideWorldBounds(true);
+    this.moving = false;
+    this.facing = Facing.RIGHT;
 
     scene.anims.create({
       key: "blue_right",
@@ -61,24 +63,41 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
       repeat: -1,
       frameRate: 10,
     });
+    this.anims.play(`blue_${this.facing}`);
+    this.anims.pause();
   }
+
   onUpdate = (player: Player) => {
-    if (
-      !this.isMe &&
-      (player.x !== this.x || player.y !== this.y) &&
-      !this.currentTween
-    ) {
-      this.currentTween = this.scene.add.tween({
-        targets: this,
-        x: player.x,
-        y: player.y,
-        ease: "Linear",
-        duration: 25,
-        onComplete: () => {
-          this.currentTween = undefined;
-        },
-      });
+    if (!this.isMe) {
+      this.setMoving(player.moving);
+      this.setFacing(player.facing);
+      if ((player.x !== this.x || player.y !== this.y) && !this.currentTween) {
+        this.currentTween = this.scene.add.tween({
+          targets: this,
+          x: player.x,
+          y: player.y,
+          ease: "Linear",
+          duration: 25,
+          onComplete: () => {
+            this.currentTween = undefined;
+          },
+        });
+      }
     }
+  };
+  setFacing = (facing: Facing) => {
+    if (this.moving && facing != this.facing) {
+      this.anims.play(`blue_${facing}`, true);
+    }
+    this.facing = facing;
+  };
+  setMoving = (moving: boolean) => {
+    if (!moving && this.moving) {
+      this.anims.pause();
+    } else if (moving && !this.moving) {
+      this.anims.resume();
+    }
+    this.moving = moving;
   };
   update = () => {};
 }

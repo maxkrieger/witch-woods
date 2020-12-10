@@ -28,11 +28,19 @@ export interface InventoryEntry {
   quantity: number;
 }
 
+export enum Facing {
+  LEFT = "left",
+  RIGHT = "right",
+  UP = "up",
+  DOWN = "down",
+}
 export interface Player {
   name: string;
   id: string;
   x: number;
   y: number;
+  moving: boolean;
+  facing: Facing;
   team: Team;
   inventory: InventoryEntry[];
 }
@@ -77,11 +85,6 @@ const makeResourceReq = (): ResourceRequirement => ({
   resourceType: ResourceType.MUSHROOM,
 });
 
-const resourcesRemaining = ({
-  quantityRequired,
-  quantity,
-}: ResourceRequirement) => quantityRequired - quantity;
-
 export const makePlayer = (name: string, team: Team): Player => ({
   name,
   id: v4(),
@@ -89,6 +92,8 @@ export const makePlayer = (name: string, team: Team): Player => ({
   y: random(0, 1000),
   team,
   inventory: [],
+  moving: false,
+  facing: Facing.RIGHT,
 });
 
 export default (): GameState => {

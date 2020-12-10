@@ -1,4 +1,5 @@
 import {
+  Facing,
   GameState,
   InventoryEntry,
   Player,
@@ -8,7 +9,7 @@ import Mushroom from "../objects/mushroom";
 import Pentagram from "../objects/pentagram";
 import Resource from "../objects/Resource";
 import Witch from "../objects/witch";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
 interface GameObjects {
   sprites: { [id: string]: Phaser.Physics.Arcade.Sprite };
@@ -20,6 +21,7 @@ export default class MainScene extends Phaser.Scene {
   cursor: Phaser.Types.Input.Keyboard.CursorKeys;
   movementSendInterval: Phaser.Time.TimerEvent;
   myID: string;
+  socket: Socket;
   constructor() {
     super({ key: "MainScene" });
     this.gameObjects = {
@@ -62,6 +64,7 @@ export default class MainScene extends Phaser.Scene {
 
     // this.physics.add.collider(this.gameObjects.sprites["bla"], pentagram);
     const socket = io("ws://localhost:6660");
+    this.socket = socket;
     socket.on("connect", () => {
       console.log("SOCKET CONNECTED", socket.connected, socket.id);
       socket.emit("join", { name: "max", team: "RED" });
@@ -71,8 +74,10 @@ export default class MainScene extends Phaser.Scene {
       this.movementSendInterval = this.time.addEvent({
         delay: 50,
         callback: () => {
-          const { x, y } = this.gameObjects.sprites[player.id];
-          socket.emit("move", { x, y });
+          const { x, y, facing, moving } = this.gameObjects.sprites[
+            player.id
+          ] as Witch;
+          socket.emit("move", { x, y, facing, moving });
         },
         callbackScope: this,
         loop: true,
@@ -98,6 +103,10 @@ export default class MainScene extends Phaser.Scene {
             case ResourceType.GEM:
               break;
           }
+        } else {
+          (this.gameObjects.sprites[resource.id] as Resource).onUpdate(
+            resource
+          );
         }
       });
       Object.values(state.players).forEach((player) => {
@@ -134,27 +143,33 @@ export default class MainScene extends Phaser.Scene {
   };
 
   setPlayerY = (v: number) => () => {
+    const me = this.gameObjects.sprites[this.myID] as Witch;
     if (v !== 0 || (!this.cursor.down?.isDown && !this.cursor.up?.isDown)) {
-      this.gameObjects.sprites[this.myID].setVelocityY(v);
+      me.setVelocityY(v);
       if (v > 0) {
-        this.gameObjects.sprites[this.myID].anims.play("blue_down", true);
+        me.setMoving(true);
+        me.setFacing(Facing.DOWN);
       } else if (v < 0) {
-        this.gameObjects.sprites[this.myID].anims.play("blue_up", true);
+        me.setMoving(true);
+        me.setFacing(Facing.UP);
       } else if (v === 0 && this.cursor.left?.isUp && this.cursor.right?.isUp) {
-        this.gameObjects.sprites[this.myID].anims.stop();
+        me.setMoving(false);
       }
     }
   };
 
   setPlayerX = (v: number) => () => {
+    const me = this.gameObjects.sprites[this.myID] as Witch;
     if (v !== 0 || (!this.cursor.left?.isDown && !this.cursor.right?.isDown)) {
-      this.gameObjects.sprites[this.myID].setVelocityX(v);
+      me.setVelocityX(v);
       if (v > 0) {
-        this.gameObjects.sprites[this.myID].anims.play("blue_right", true);
+        me.setMoving(true);
+        me.setFacing(Facing.RIGHT);
       } else if (v < 0) {
-        this.gameObjects.sprites[this.myID].anims.play("blue_left", true);
+        me.setMoving(true);
+        me.setFacing(Facing.LEFT);
       } else if (v === 0 && this.cursor.down?.isUp && this.cursor.up?.isUp) {
-        this.gameObjects.sprites[this.myID].anims.stop();
+        me.setMoving(false);
       }
     }
   };

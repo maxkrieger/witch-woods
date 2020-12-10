@@ -1,6 +1,11 @@
 import { Socket, Server } from "socket.io";
 import express from "express";
-import gamestate, { GameState, makePlayer, Team } from "../src/gamestate";
+import gamestate, {
+  Facing,
+  GameState,
+  makePlayer,
+  Team,
+} from "../src/gamestate";
 import { stringify } from "uuid";
 
 const server = express();
@@ -28,11 +33,26 @@ io.on("connection", (socket: Socket) => {
     socket.join("room1");
     socket.emit("myPlayer", playerInit);
     io.to("room1").emit("gameState", rooms["room1"]);
-    socket.on("move", ({ x, y }: { x: number; y: number }) => {
-      rooms["room1"].players[playerInit.id].x = x;
-      rooms["room1"].players[playerInit.id].y = y;
-      io.to("room1").emit("gameState", rooms["room1"]);
-    });
+    socket.on(
+      "move",
+      ({
+        x,
+        y,
+        facing,
+        moving,
+      }: {
+        x: number;
+        y: number;
+        facing: Facing;
+        moving: boolean;
+      }) => {
+        rooms["room1"].players[playerInit.id].x = x;
+        rooms["room1"].players[playerInit.id].y = y;
+        rooms["room1"].players[playerInit.id].moving = moving;
+        rooms["room1"].players[playerInit.id].facing = facing;
+        io.to("room1").emit("gameState", rooms["room1"]);
+      }
+    );
     socket.on("disconnect", () => {
       delete rooms["room1"].players[playerInit.id];
       io.to("room1").emit("removePlayer", playerInit.id);
