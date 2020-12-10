@@ -1,6 +1,6 @@
 import { Socket, Server } from "socket.io";
 import express from "express";
-import gamestate, { GameState, makePlayer, Team } from "./gamestate";
+import gamestate, { GameState, makePlayer, Team } from "../src/gamestate";
 import { stringify } from "uuid";
 
 const server = express();

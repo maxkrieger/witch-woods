@@ -1,3 +1,5 @@
+import { ResourceDefinition, ResourceType } from "../../gamestate";
+
 export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
   id: string;
   health: number;
@@ -13,15 +15,14 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
     y: number,
     sprite: string,
     id: string,
-    resourceType: string,
-    maxHealth: number
+    resource: ResourceDefinition
   ) {
     super(scene, x, y, sprite);
     scene.add.existing(this);
     this.id = id;
     this.focused = false;
-    this.maxHealth = maxHealth;
-    this.health = maxHealth;
+    this.maxHealth = resource.maxHealth;
+    this.health = resource.maxHealth;
     this.scene.registry.events.on("changedata", this.dataChange);
     this.healthBar = new Phaser.GameObjects.Graphics(scene);
     scene.add.existing(this.healthBar);

@@ -1,7 +1,10 @@
+import { Player } from "../../gamestate";
+
 export default class Witch extends Phaser.Physics.Arcade.Sprite {
   isMe: boolean;
   id: string;
   facing: "left" | "right" | "up" | "down";
+  currentTween?: Phaser.Tweens.Tween;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -59,5 +62,23 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
       frameRate: 10,
     });
   }
+  onUpdate = (player: Player) => {
+    if (
+      !this.isMe &&
+      (player.x !== this.x || player.y !== this.y) &&
+      !this.currentTween
+    ) {
+      this.currentTween = this.scene.add.tween({
+        targets: this,
+        x: player.x,
+        y: player.y,
+        ease: "Linear",
+        duration: 25,
+        onComplete: () => {
+          this.currentTween = undefined;
+        },
+      });
+    }
+  };
   update = () => {};
 }

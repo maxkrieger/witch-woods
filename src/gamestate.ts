@@ -1,6 +1,25 @@
 import { v4 } from "uuid";
 import { random, times } from "lodash";
-export type ResourceType = "mushroom" | "gem";
+
+export enum ResourceType {
+  MUSHROOM,
+  GEM,
+}
+
+export interface ResourceDefinition {
+  type: ResourceType;
+  maxHealth: number;
+}
+
+export const MushroomResource: ResourceDefinition = {
+  type: ResourceType.MUSHROOM,
+  maxHealth: 5,
+};
+
+export const GemResource: ResourceDefinition = {
+  type: ResourceType.MUSHROOM,
+  maxHealth: 10,
+};
 
 export type Team = "RED" | "BLUE";
 
@@ -23,6 +42,7 @@ export interface GameObject {
   x: number;
   y: number;
   resourceType: ResourceType;
+  health: number;
 }
 
 export interface ResourceRequirement {
@@ -43,18 +63,24 @@ export interface GameState {
   status: Status;
 }
 
-const makeResource = (resourceType: ResourceType): GameObject => ({
+const makeResource = (definition: ResourceDefinition): GameObject => ({
   id: v4(),
   x: random(0, 1000),
   y: random(0, 1000),
-  resourceType,
+  resourceType: definition.type,
+  health: definition.maxHealth,
 });
 
 const makeResourceReq = (): ResourceRequirement => ({
   quantity: 0,
   quantityRequired: random(1, 10),
-  resourceType: "mushroom",
+  resourceType: ResourceType.MUSHROOM,
 });
+
+const resourcesRemaining = ({
+  quantityRequired,
+  quantity,
+}: ResourceRequirement) => quantityRequired - quantity;
 
 export const makePlayer = (name: string, team: Team): Player => ({
   name,
@@ -75,7 +101,7 @@ export default (): GameState => {
       won: false,
     },
   };
-  times(20, () => makeResource("mushroom")).forEach(
+  times(20, () => makeResource(MushroomResource)).forEach(
     (item) => (init.objects[item.id] = item)
   );
 

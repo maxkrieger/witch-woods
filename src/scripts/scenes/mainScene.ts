@@ -1,4 +1,9 @@
-import { GameState, InventoryEntry, Player } from "../../../server/gamestate";
+import {
+  GameState,
+  InventoryEntry,
+  Player,
+  ResourceType,
+} from "../../gamestate";
 import Mushroom from "../objects/mushroom";
 import Pentagram from "../objects/pentagram";
 import Resource from "../objects/Resource";
@@ -13,6 +18,7 @@ interface GameObjects {
 export default class MainScene extends Phaser.Scene {
   gameObjects: GameObjects;
   cursor: Phaser.Types.Input.Keyboard.CursorKeys;
+  movementSendInterval: Phaser.Time.TimerEvent;
   myID: string;
   constructor() {
     super({ key: "MainScene" });
@@ -62,6 +68,16 @@ export default class MainScene extends Phaser.Scene {
     });
     socket.on("myPlayer", (player: Player) => {
       this.myID = player.id;
+      this.movementSendInterval = this.time.addEvent({
+        delay: 50,
+        callback: () => {
+          const { x, y } = this.gameObjects.sprites[player.id];
+          socket.emit("move", { x, y });
+        },
+        callbackScope: this,
+        loop: true,
+        paused: false,
+      });
     });
     socket.on("removePlayer", (playerID: string) => {
       this.gameObjects.sprites[playerID].destroy();
@@ -71,7 +87,7 @@ export default class MainScene extends Phaser.Scene {
       Object.values(state.objects).forEach((resource) => {
         if (!(resource.id in this.gameObjects.sprites)) {
           switch (resource.resourceType) {
-            case "mushroom":
+            case ResourceType.MUSHROOM:
               this.gameObjects.sprites[resource.id] = new Mushroom(
                 this,
                 resource.x,
@@ -79,7 +95,7 @@ export default class MainScene extends Phaser.Scene {
                 resource.id
               );
               break;
-            case "gem":
+            case ResourceType.GEM:
               break;
           }
         }
@@ -104,15 +120,9 @@ export default class MainScene extends Phaser.Scene {
             );
           }
         } else {
-          const tween = this.add.tween({
-            targets: this.gameObjects.sprites[player.id],
-            ease: "Linear",
-            repeat: 0,
-          });
-          tween.play();
+          (this.gameObjects.sprites[player.id] as Witch).onUpdate(player);
         }
       });
-      console.log(state);
     });
   }
 
