@@ -90,6 +90,7 @@ export default class MainScene extends Phaser.Scene {
       delete this.gameObjects.sprites[playerID];
     });
     socket.on("removeResource", (resourceID: string) => {
+      (this.gameObjects.sprites[resourceID] as Resource).healthBar.clear();
       this.gameObjects.sprites[resourceID].destroy();
       delete this.gameObjects.sprites[resourceID];
     });

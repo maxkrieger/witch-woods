@@ -3,8 +3,8 @@ import { GameObject, ResourceDefinition, ResourceType } from "../../gamestate";
 export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
   id: string;
   health: number;
-  focused: boolean;
   maxHealth: number;
+  focused: boolean = false;
   healthBar: Phaser.GameObjects.Graphics;
   channeling: boolean;
   isResource = true;
@@ -19,7 +19,6 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
     super(scene, x, y, sprite);
     scene.add.existing(this);
     this.id = id;
-    this.focused = false;
     this.maxHealth = resource.maxHealth;
     this.health = resource.maxHealth;
     this.scene.registry.events.on("changedata", this.dataChange);
@@ -27,9 +26,9 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this.healthBar);
     this.scene.registry.events.on("setdata", this.dataChange);
   }
-  drawHealth = () => {
+  drawHealth = (show: boolean) => {
     this.healthBar.clear();
-    if (this.focused) {
+    if (show) {
       this.healthBar.fillStyle(0xffffff, 0.3);
       this.healthBar.fillRect(
         this.x - this.displayWidth * 0.5,
@@ -51,17 +50,17 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
       if (data === this.id) {
         this.setAlpha(0.9);
         this.focused = true;
-        this.drawHealth();
+        this.drawHealth(true);
       } else {
         this.clearAlpha();
         this.focused = false;
-        this.drawHealth();
+        this.drawHealth(false);
       }
     }
   };
 
   onUpdate = (resource: GameObject) => {
     this.health = resource.health;
-    this.drawHealth();
+    this.drawHealth(resource.channeling !== null || this.focused);
   };
 }
