@@ -1,3 +1,4 @@
+import { isEqual } from "lodash";
 import { Facing, Player } from "../../gamestate";
 
 export default class Witch extends Phaser.Physics.Arcade.Sprite {
@@ -6,6 +7,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
   currentTween?: Phaser.Tweens.Tween;
   facing: Facing;
   moving: boolean;
+  prevState: Player;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -68,6 +70,10 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
   }
 
   onUpdate = (player: Player) => {
+    if (isEqual(this.prevState, player)) {
+      return;
+    }
+    this.prevState = player;
     if (!this.isMe) {
       this.setMoving(player.moving);
       this.setFacing(player.facing);
@@ -77,7 +83,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
           x: player.x,
           y: player.y,
           ease: "Linear",
-          duration: 25,
+          duration: 75,
           onComplete: () => {
             this.currentTween = undefined;
           },

@@ -72,7 +72,7 @@ export default class MainScene extends Phaser.Scene {
     socket.on("myPlayer", (player: Player) => {
       this.myID = player.id;
       this.movementSendInterval = this.time.addEvent({
-        delay: 50,
+        delay: 100,
         callback: () => {
           const { x, y, facing, moving } = this.gameObjects.sprites[
             player.id
