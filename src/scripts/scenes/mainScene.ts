@@ -32,14 +32,23 @@ export default class MainScene extends Phaser.Scene {
   }
   preload() {
     this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
+    
+    //load tilemap stuff
+    this.load.tilemapTiledJSON('level1', 'assets/tilemaps/maps/testMap.json');
+    this.load.image('testMapLarge', 'assets/tilemaps/maps/testMapLarge.png');
+
   }
 
   create() {
     this.cameras.main.setBounds(0, 0, 5000, 5000);
     this.physics.world.setBounds(0, 0, 5000, 5000);
-    this.add.image(0, 0, "bg").setOrigin(0);
-    this.add.image(688, 0, "bg").setFlipX(true).setOrigin(0);
-    this.add.image(1376, 0, "bg").setOrigin(0);
+    //this.add.image(0, 0, "bg").setOrigin(0);
+    //this.add.image(688, 0, "bg").setFlipX(true).setOrigin(0);
+    //this.add.image(1376, 0, "bg").setOrigin(0);
+    //tilemap add:
+    var map = this.make.tilemap({ key: 'level1' });
+    var tileset = map.addTilesetImage('woodsLarge', 'testMapLarge');
+    var layer = map.createStaticLayer('MapLayer', tileset);
 
     this.cursor = this.input.keyboard.createCursorKeys();
     this.cursor.down?.setEmitOnRepeat(true);
