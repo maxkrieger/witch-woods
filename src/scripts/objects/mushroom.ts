@@ -1,4 +1,4 @@
-import { MushroomResource, ResourceType } from "../../gamestate";
+import { GameObject, MushroomResource, ResourceType } from "../../gamestate";
 import Resource from "./Resource";
 
 export default class Mushroom extends Resource {

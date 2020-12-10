@@ -2,8 +2,8 @@ import { v4 } from "uuid";
 import { random, times } from "lodash";
 
 export enum ResourceType {
-  MUSHROOM,
-  GEM,
+  MUSHROOM = "mushroom",
+  GEM = "gem",
 }
 
 export interface ResourceDefinition {
@@ -19,6 +19,11 @@ export const MushroomResource: ResourceDefinition = {
 export const GemResource: ResourceDefinition = {
   type: ResourceType.MUSHROOM,
   maxHealth: 10,
+};
+
+export const resourceTypes: { [id in ResourceType]: ResourceDefinition } = {
+  mushroom: MushroomResource,
+  gem: GemResource,
 };
 
 export type Team = "RED" | "BLUE";
@@ -51,6 +56,7 @@ export interface GameObject {
   y: number;
   resourceType: ResourceType;
   health: number;
+  channeling: string | null;
 }
 
 export interface ResourceRequirement {
@@ -77,6 +83,7 @@ const makeResource = (definition: ResourceDefinition): GameObject => ({
   y: random(0, 1000),
   resourceType: definition.type,
   health: definition.maxHealth,
+  channeling: null,
 });
 
 const makeResourceReq = (): ResourceRequirement => ({

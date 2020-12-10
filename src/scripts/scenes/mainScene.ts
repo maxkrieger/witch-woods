@@ -1,5 +1,6 @@
 import {
   Facing,
+  GameObject,
   GameState,
   InventoryEntry,
   Player,
@@ -88,6 +89,10 @@ export default class MainScene extends Phaser.Scene {
       this.gameObjects.sprites[playerID].destroy();
       delete this.gameObjects.sprites[playerID];
     });
+    socket.on("removeResource", (resourceID: string) => {
+      this.gameObjects.sprites[resourceID].destroy();
+      delete this.gameObjects.sprites[resourceID];
+    });
     socket.on("gameState", (state: GameState) => {
       Object.values(state.objects).forEach((resource) => {
         if (!(resource.id in this.gameObjects.sprites)) {
@@ -138,7 +143,7 @@ export default class MainScene extends Phaser.Scene {
   setChanneling = (channeling: boolean) => () => {
     const focused = this.registry.get("focusedResource");
     if (focused !== null) {
-      (this.gameObjects.sprites[focused] as Resource).setChanneling(channeling);
+      this.socket.emit("channelResource", { id: focused, channeling });
     }
   };
 

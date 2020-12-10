@@ -7,7 +7,6 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
   maxHealth: number;
   healthBar: Phaser.GameObjects.Graphics;
   channeling: boolean;
-  channelingInterval: Phaser.Time.TimerEvent;
   isResource = true;
   constructor(
     scene: Phaser.Scene,
@@ -27,14 +26,6 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
     this.healthBar = new Phaser.GameObjects.Graphics(scene);
     scene.add.existing(this.healthBar);
     this.scene.registry.events.on("setdata", this.dataChange);
-
-    this.channelingInterval = scene.time.addEvent({
-      delay: 250,
-      callback: this.channelTick,
-      callbackScope: this,
-      loop: true,
-      paused: false,
-    });
   }
   drawHealth = () => {
     this.healthBar.clear();
@@ -68,27 +59,9 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
       }
     }
   };
-  setChanneling = (channeling: boolean) => {
-    this.channeling = channeling;
-  };
-  /**
-   * performs server effect
-   */
-  channelTick = () => {
-    if (this.channeling) {
-      if (this.health <= 0) {
-        console.log("despawn!");
-        return;
-      }
-      this.health--;
-      this.drawHealth();
-    } else {
-      if (this.health < this.maxHealth) {
-        this.health++;
-        this.drawHealth();
-      }
-    }
-  };
 
-  onUpdate = (resource: GameObject) => {};
+  onUpdate = (resource: GameObject) => {
+    this.health = resource.health;
+    this.drawHealth();
+  };
 }
