@@ -17,7 +17,7 @@ export const MushroomResource: ResourceDefinition = {
 };
 
 export const GemResource: ResourceDefinition = {
-  type: ResourceType.MUSHROOM,
+  type: ResourceType.GEM,
   maxHealth: 10,
 };
 
