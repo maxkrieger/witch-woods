@@ -126,6 +126,9 @@ io.on("connection", (socket: Socket) => {
     socket.on(
       "channelResource",
       ({ id, channeling }: { id: string; channeling: boolean }) => {
+        if (!(id in rooms["room1"].objects)) {
+          return;
+        }
         if (channeling && rooms["room1"].objects[id].channeling === null) {
           rooms["room1"].objects[id].channeling = playerInit.id;
         } else if (
