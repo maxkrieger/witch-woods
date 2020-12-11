@@ -92,7 +92,7 @@ export default class MainScene extends Phaser.Scene {
     // TODO: process.env
     const socket = io(
       process.env.NODE_ENV === "production"
-        ? "https://witch-woods.maxkrieger.repl.co:6660"
+        ? "wss://witch-woods.maxkrieger.repl.co"
         : "ws://localhost:6660"
     );
     this.socket = socket;
