@@ -84,8 +84,8 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.right?.on("down", this.setPlayerX(300));
     this.cursor.right?.on("up", this.setPlayerX(0));
 
-    this.bluePentagram = new Pentagram(this, 1500, 1700, Team.BLUE);
-    this.redPentagram = new Pentagram(this, 3000, 1700, Team.RED);
+    this.bluePentagram = new Pentagram(this, 920, 445, Team.BLUE);
+    this.redPentagram = new Pentagram(this, 4140, 445, Team.RED);
     this.inventorySprite = new Inventory(this);
     this.requirementsSprite = new RequirementHUD(this);
     console.log(this.inventorySprite);
