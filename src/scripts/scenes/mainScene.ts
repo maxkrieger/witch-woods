@@ -222,10 +222,10 @@ export default class MainScene extends Phaser.Scene {
 
   update(time: number) {
     // TODO: https://phaser.io/examples/v3/view/input/mouse/click-sprite
-    Object.values(this.gameObjects.sprites).forEach((sprite) => {
-      sprite.update();
-    });
     if (this.myID) {
+      Object.values(this.gameObjects.sprites).forEach((sprite) => {
+        sprite.update();
+      });
       const inRange = Object.values(this.gameObjects.sprites)
         .filter((sprite: any) => sprite.isResource)
         .map(({ id }: any) => ({
