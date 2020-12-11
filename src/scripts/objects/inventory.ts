@@ -1,4 +1,4 @@
-import { isEqual } from "lodash";
+import { isEqual, times } from "lodash";
 import {
   InventoryEntry,
   InventoryEntryI,
@@ -9,6 +9,7 @@ const SIZE = 100;
 export default class Inventory extends Phaser.GameObjects.Grid {
   inventoryState: InventoryEntry[];
   images: Phaser.GameObjects.Image[];
+  texts: Phaser.GameObjects.Text[];
   constructor(scene: Phaser.Scene) {
     super(
       scene,
@@ -21,9 +22,22 @@ export default class Inventory extends Phaser.GameObjects.Grid {
       0x000000,
       0.5,
       0xffffff,
-      0.5
+      0.3
     );
     this.images = [];
+    this.texts = times(4, (idx) => {
+      const text = new Phaser.GameObjects.Text(
+        this.scene,
+        this.x + SIZE * idx,
+        this.scene.cameras.main.y + this.scene.cameras.main.height - 30,
+        "",
+        { color: "#ffffff" }
+      );
+      text.setOrigin(0);
+      text.setScrollFactor(0);
+      this.scene.add.existing(text);
+      return text;
+    });
 
     this.setOrigin(0);
     scene.add.existing(this);
@@ -39,6 +53,7 @@ export default class Inventory extends Phaser.GameObjects.Grid {
       });
       inventoryState.forEach((et, idx) => {
         if (et === null) {
+          this.texts[idx].setText("");
           return;
         }
         const entry = et as InventoryEntryI;
@@ -48,6 +63,7 @@ export default class Inventory extends Phaser.GameObjects.Grid {
           this.scene.cameras.main.y + this.scene.cameras.main.height - SIZE,
           "staticResources"
         );
+        this.texts[idx].setText(et.quantity.toString());
         this.images[idx].setOrigin(0);
         this.images[idx].setScrollFactor(0);
         this.images[idx].setFrame(
