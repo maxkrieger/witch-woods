@@ -5,16 +5,12 @@ import {
   InventoryEntry,
   Player,
   ResourceType,
-  Team,
 } from "../../gamestate";
-import Mushroom from "../objects/staticResource";
+import Mushroom from "../objects/mushroom";
 import Pentagram from "../objects/pentagram";
 import Resource from "../objects/Resource";
 import Witch from "../objects/witch";
 import { io, Socket } from "socket.io-client";
-import Inventory from "../objects/inventory";
-import StaticResource from "../objects/staticResource";
-import RequirementHUD from "../objects/requirementHUD";
 
 interface GameObjects {
   sprites: { [id: string]: Phaser.Physics.Arcade.Sprite };
@@ -27,10 +23,6 @@ export default class MainScene extends Phaser.Scene {
   movementSendInterval: Phaser.Time.TimerEvent;
   myID: string;
   socket: Socket;
-  inventorySprite: Inventory;
-  requirementsSprite: RequirementHUD;
-  bluePentagram: Pentagram;
-  pentagramInRange: boolean;
   constructor() {
     super({ key: "MainScene" });
     this.gameObjects = {
@@ -39,11 +31,11 @@ export default class MainScene extends Phaser.Scene {
     };
   }
   preload() {
-    this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
-
+    //this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
+    
     //load tilemap stuff
-    this.load.tilemapTiledJSON("level1", "assets/tilemaps/maps/testMap.json");
-    this.load.image("testMapLarge", "assets/tilemaps/maps/testMapLarge.png");
+    this.load.tilemapTiledJSON('level1', 'assets/tilemaps/bgFull/bgFullJSON.json');
+    this.load.image('bgFull', 'assets/tilemaps/bgFull/bgFullIMG.png');
   }
 
   create() {
@@ -53,10 +45,12 @@ export default class MainScene extends Phaser.Scene {
     //this.add.image(688, 0, "bg").setFlipX(true).setOrigin(0);
     //this.add.image(1376, 0, "bg").setOrigin(0);
     //tilemap add:
-    var map = this.make.tilemap({ key: "level1" });
-    var tileset = map.addTilesetImage("woodsLarge", "testMapLarge");
-    var layer = map.createStaticLayer("MapLayer", tileset);
-
+    var map = this.make.tilemap({ key: 'level1' });
+    //var tilesetGround = map.addTilesetImage('mapFull', 'bgFull');
+    
+    var tilesetGround = map.addTilesetImage('mapTiled', 'bgFull');
+    var layer = map.createStaticLayer('GroundLayer', tilesetGround);
+    //layer.scale = 4;
     this.cursor = this.input.keyboard.createCursorKeys();
     this.cursor.down?.setEmitOnRepeat(true);
     this.cursor.up?.setEmitOnRepeat(true);
@@ -75,19 +69,16 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.right?.on("down", this.setPlayerX(300));
     this.cursor.right?.on("up", this.setPlayerX(0));
 
-    this.bluePentagram = new Pentagram(this, 1200, 400, "blue_team");
-    this.inventorySprite = new Inventory(this);
-    this.requirementsSprite = new RequirementHUD(this);
-    console.log(this.inventorySprite);
+    const pentagram = new Pentagram(this, 2500, 1700, "red_team");
 
     // this.lights.enable().setAmbientColor(0x555555);
 
-    // TODO: process.env
+    // this.physics.add.collider(this.gameObjects.sprites["bla"], pentagram);
     const socket = io("ws://localhost:6660");
     this.socket = socket;
     socket.on("connect", () => {
       console.log("SOCKET CONNECTED", socket.connected, socket.id);
-      socket.emit("join", { name: "max", team: Team.BLUE });
+      socket.emit("join", { name: "max", team: "RED" });
     });
     socket.on("myPlayer", (player: Player) => {
       this.myID = player.id;
@@ -114,15 +105,20 @@ export default class MainScene extends Phaser.Scene {
       delete this.gameObjects.sprites[resourceID];
     });
     socket.on("gameState", (state: GameState) => {
-      this.requirementsSprite.setRequirements(
-        state.status[state.players[this.myID].team]
-      );
       Object.values(state.objects).forEach((resource) => {
         if (!(resource.id in this.gameObjects.sprites)) {
-          this.gameObjects.sprites[resource.id] = new StaticResource(
-            this,
-            resource
-          );
+          switch (resource.resourceType) {
+            case ResourceType.MUSHROOM:
+              this.gameObjects.sprites[resource.id] = new Mushroom(
+                this,
+                resource.x,
+                resource.y,
+                resource.id
+              );
+              break;
+            case ResourceType.GEM:
+              break;
+          }
         } else {
           (this.gameObjects.sprites[resource.id] as Resource).onUpdate(
             resource
@@ -150,9 +146,6 @@ export default class MainScene extends Phaser.Scene {
           }
         } else {
           (this.gameObjects.sprites[player.id] as Witch).onUpdate(player);
-          if (player.id === this.myID) {
-            this.inventorySprite.setInventoryState(player.inventory);
-          }
         }
       });
     });
@@ -227,26 +220,6 @@ export default class MainScene extends Phaser.Scene {
       } else {
         this.setFocusedResource(null);
       }
-      const pentagramRange = Phaser.Math.Distance.Between(
-        this.gameObjects.sprites[this.myID].x,
-        this.gameObjects.sprites[this.myID].y,
-        this.bluePentagram.x,
-        this.bluePentagram.y
-      );
-      if (pentagramRange <= 200) {
-        this.setPentagramInRange(true);
-      } else {
-        this.setPentagramInRange(false);
-      }
     }
-    this.children.bringToTop(this.inventorySprite);
   }
-  setPentagramInRange = (inRange: boolean) => {
-    if (inRange !== this.pentagramInRange) {
-      this.pentagramInRange = inRange;
-      if (inRange) {
-        this.socket.emit("dumpItems");
-      }
-    }
-  };
 }

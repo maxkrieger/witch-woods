@@ -1,0 +1,57 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "C:/Users/Huw/Documents/Embroidery/temp.tmx",
+    "expandedProjectPaths": [
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "../bgFull.tsx": {
+            "scaleInDock": 0.0625,
+            "scaleInEditor": 0.015625
+        },
+        "C:/Users/Huw/Documents/Embroidery/temp.tmx": {
+            "scale": 0.125,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 3152,
+                "y": 1580
+            }
+        },
+        "bgFull.json": {
+            "scale": 0.5,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 618,
+                "y": 407
+            }
+        },
+        "bgFull.tsx": {
+            "scaleInEditor": 1
+        }
+    },
+    "lastUsedTilesetExportFilter": "JSON tileset files (*.json)",
+    "map.height": 20,
+    "map.lastUsedExportFilter": "JSON map files (*.json)",
+    "map.lastUsedFormat": "json",
+    "map.tileHeight": 128,
+    "map.tileWidth": 128,
+    "map.width": 40,
+    "openFiles": [
+        "C:/Users/Huw/Documents/Embroidery/temp.tmx"
+    ],
+    "project": "bgFull.tiled-project",
+    "recentFiles": [
+        "C:/Users/Huw/Documents/Embroidery/temp.tmx",
+        "bgFull.tsx",
+        "../bgFull.tsx",
+        "bgFull.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 25,
+        "width": 25
+    }
+}

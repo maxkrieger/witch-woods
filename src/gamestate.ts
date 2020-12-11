@@ -2,44 +2,36 @@ import { v4 } from "uuid";
 import { random, times } from "lodash";
 
 export enum ResourceType {
-  PINECONE = "pinecone",
   MUSHROOM = "mushroom",
+  GEM = "gem",
 }
 
 export interface ResourceDefinition {
   type: ResourceType;
   maxHealth: number;
-  spriteIndex: number;
 }
 
 export const MushroomResource: ResourceDefinition = {
   type: ResourceType.MUSHROOM,
   maxHealth: 5,
-  spriteIndex: 1,
 };
 
-export const PineconeResource: ResourceDefinition = {
-  type: ResourceType.PINECONE,
+export const GemResource: ResourceDefinition = {
+  type: ResourceType.MUSHROOM,
   maxHealth: 10,
-  spriteIndex: 0,
 };
 
 export const resourceTypes: { [id in ResourceType]: ResourceDefinition } = {
   mushroom: MushroomResource,
-  pinecone: PineconeResource,
+  gem: GemResource,
 };
 
-export enum Team {
-  RED = "red",
-  BLUE = "blue",
-}
+export type Team = "RED" | "BLUE";
 
-export interface InventoryEntryI {
+export interface InventoryEntry {
   resourceType: ResourceType;
   quantity: number;
 }
-
-export type InventoryEntry = InventoryEntryI | null;
 
 export enum Facing {
   LEFT = "left",
@@ -74,8 +66,8 @@ export interface ResourceRequirement {
 }
 
 export interface Status {
-  red: ResourceRequirement[];
-  blue: ResourceRequirement[];
+  redTeam: ResourceRequirement[];
+  blueTeam: ResourceRequirement[];
   won: boolean;
 }
 
@@ -94,10 +86,10 @@ const makeResource = (definition: ResourceDefinition): GameObject => ({
   channeling: null,
 });
 
-const makeResourceReq = (type: ResourceType): ResourceRequirement => ({
+const makeResourceReq = (): ResourceRequirement => ({
   quantity: 0,
-  quantityRequired: random(2, 10),
-  resourceType: type,
+  quantityRequired: random(1, 10),
+  resourceType: ResourceType.MUSHROOM,
 });
 
 export const makePlayer = (name: string, team: Team): Player => ({
@@ -116,23 +108,14 @@ export default (): GameState => {
     players: {},
     objects: {},
     status: {
-      red: [
-        makeResourceReq(ResourceType.MUSHROOM),
-        makeResourceReq(ResourceType.PINECONE),
-      ],
-      blue: [
-        makeResourceReq(ResourceType.MUSHROOM),
-        makeResourceReq(ResourceType.PINECONE),
-      ],
+      redTeam: [makeResourceReq()],
+      blueTeam: [makeResourceReq()],
       won: false,
     },
   };
-  times(10, () => makeResource(MushroomResource)).forEach(
+  times(20, () => makeResource(MushroomResource)).forEach(
     (item) => (init.objects[item.id] = item)
   );
 
-  times(10, () => makeResource(PineconeResource)).forEach(
-    (item) => (init.objects[item.id] = item)
-  );
   return init;
 };

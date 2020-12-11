@@ -16,10 +16,7 @@ export default class PreloadScene extends Phaser.Scene {
       "assets/img/norm.png",
     ]);
 
-    this.load.spritesheet("staticResources", "assets/img/arden_assets.png", {
-      frameWidth: 500,
-      frameHeight: 500,
-    });
+    this.load.image("mush1", ["assets/img/mush1.png", "assets/img/norm.png"]);
   }
 
   create() {
