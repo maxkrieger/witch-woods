@@ -42,8 +42,11 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
 
     //load tilemap stuff
-    this.load.tilemapTiledJSON('level1', 'assets/tilemaps/bgFull/bgFullJSON.json');
-    this.load.image('bgFull', 'assets/tilemaps/bgFull/bgFullIMG.png');
+    this.load.tilemapTiledJSON(
+      "level1",
+      "assets/tilemaps/bgFull/bgFullJSON.json"
+    );
+    this.load.image("bgFull", "assets/tilemaps/bgFull/bgFullIMG.png");
   }
 
   create() {
@@ -54,11 +57,11 @@ export default class MainScene extends Phaser.Scene {
     //this.add.image(688, 0, "bg").setFlipX(true).setOrigin(0);
     //this.add.image(1376, 0, "bg").setOrigin(0);
     //tilemap add:
-    var map = this.make.tilemap({ key: 'level1' });
+    var map = this.make.tilemap({ key: "level1" });
     //var tilesetGround = map.addTilesetImage('mapFull', 'bgFull');
-    
-    var tilesetGround = map.addTilesetImage('mapTiled', 'bgFull');
-    var layer = map.createStaticLayer('GroundLayer', tilesetGround);
+
+    var tilesetGround = map.addTilesetImage("mapTiled", "bgFull");
+    var layer = map.createStaticLayer("GroundLayer", tilesetGround);
     //layer.scale = 4;
 
     this.cursor = this.input.keyboard.createCursorKeys();
@@ -87,7 +90,11 @@ export default class MainScene extends Phaser.Scene {
     // this.lights.enable().setAmbientColor(0x555555);
 
     // TODO: process.env
-    const socket = io("ws://localhost:6660");
+    const socket = io(
+      process.env.NODE_ENV === "production"
+        ? "https://witch-woods.maxkrieger.repl.co:6660"
+        : "ws://localhost:6660"
+    );
     this.socket = socket;
     socket.on("connect", () => {
       console.log("SOCKET CONNECTED", socket.connected, socket.id);
