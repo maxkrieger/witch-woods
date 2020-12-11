@@ -26,10 +26,12 @@ export default class MainScene extends Phaser.Scene {
   cursor: Phaser.Types.Input.Keyboard.CursorKeys;
   movementSendInterval: Phaser.Time.TimerEvent;
   myID: string;
+  myTeam: Team;
   socket: Socket;
   inventorySprite: Inventory;
   requirementsSprite: RequirementHUD;
   bluePentagram: Pentagram;
+  redPentagram: Pentagram;
   pentagramInRange: boolean;
   constructor() {
     super({ key: "MainScene" });
@@ -82,7 +84,8 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.right?.on("down", this.setPlayerX(300));
     this.cursor.right?.on("up", this.setPlayerX(0));
 
-    this.bluePentagram = new Pentagram(this, 2500, 1700, "blue_team");
+    this.bluePentagram = new Pentagram(this, 1500, 1700, Team.BLUE);
+    this.redPentagram = new Pentagram(this, 3000, 1700, Team.RED);
     this.inventorySprite = new Inventory(this);
     this.requirementsSprite = new RequirementHUD(this);
     console.log(this.inventorySprite);
@@ -102,6 +105,7 @@ export default class MainScene extends Phaser.Scene {
     });
     socket.on("myPlayer", (player: Player) => {
       this.myID = player.id;
+      this.myTeam = player.team;
       this.movementSendInterval = this.time.addEvent({
         delay: 100,
         callback: () => {
@@ -239,11 +243,13 @@ export default class MainScene extends Phaser.Scene {
       } else {
         this.setFocusedResource(null);
       }
+      const myPentagram =
+        this.myTeam === Team.RED ? this.redPentagram : this.bluePentagram;
       const pentagramRange = Phaser.Math.Distance.Between(
         this.gameObjects.sprites[this.myID].x,
         this.gameObjects.sprites[this.myID].y,
-        this.bluePentagram.x,
-        this.bluePentagram.y
+        myPentagram.x,
+        myPentagram.y
       );
       if (pentagramRange <= 200) {
         this.setPentagramInRange(true);
