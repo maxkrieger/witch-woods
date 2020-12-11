@@ -38,6 +38,8 @@ export const IvyResource: ResourceDefinition = {
   spriteIndex: 5,
 };
 
+// REGENERATE RESOURCES
+
 export const resourceTypes: { [id in ResourceType]: ResourceDefinition } = {
   mushroom: MushroomResource,
   pinecone: PineconeResource,

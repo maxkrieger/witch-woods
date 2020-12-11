@@ -96,6 +96,9 @@ const balancedNextTeam = (roomid: string) => {
   return reds.length > blues.length ? Team.BLUE : Team.RED;
 };
 
+// TODO: prop hunt mode
+// fake plant explody
+
 io.on("connection", (socket: Socket) => {
   socket.on("join", ({ name }: { name: string }) => {
     const playerInit = makePlayer(name, balancedNextTeam("room1"));
@@ -116,6 +119,9 @@ io.on("connection", (socket: Socket) => {
         facing: Facing;
         moving: boolean;
       }) => {
+        if (!(playerInit.id in rooms["room1"].players)) {
+          return;
+        }
         rooms["room1"].players[playerInit.id].x = x;
         rooms["room1"].players[playerInit.id].y = y;
         rooms["room1"].players[playerInit.id].moving = moving;
