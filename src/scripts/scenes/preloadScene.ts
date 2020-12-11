@@ -16,7 +16,10 @@ export default class PreloadScene extends Phaser.Scene {
       "assets/img/norm.png",
     ]);
 
-    this.load.image("mush1", ["assets/img/mush1.png", "assets/img/norm.png"]);
+    this.load.image("mushroom", [
+      "assets/img/mush1.png",
+      "assets/img/norm.png",
+    ]);
   }
 
   create() {

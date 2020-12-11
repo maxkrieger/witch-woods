@@ -26,7 +26,10 @@ export const resourceTypes: { [id in ResourceType]: ResourceDefinition } = {
   gem: GemResource,
 };
 
-export type Team = "RED" | "BLUE";
+export enum Team {
+  RED = "red",
+  BLUE = "blue",
+}
 
 export interface InventoryEntry {
   resourceType: ResourceType;
@@ -66,8 +69,8 @@ export interface ResourceRequirement {
 }
 
 export interface Status {
-  redTeam: ResourceRequirement[];
-  blueTeam: ResourceRequirement[];
+  red: ResourceRequirement[];
+  blue: ResourceRequirement[];
   won: boolean;
 }
 
@@ -88,7 +91,7 @@ const makeResource = (definition: ResourceDefinition): GameObject => ({
 
 const makeResourceReq = (): ResourceRequirement => ({
   quantity: 0,
-  quantityRequired: random(1, 10),
+  quantityRequired: random(2, 10),
   resourceType: ResourceType.MUSHROOM,
 });
 
@@ -108,8 +111,8 @@ export default (): GameState => {
     players: {},
     objects: {},
     status: {
-      redTeam: [makeResourceReq()],
-      blueTeam: [makeResourceReq()],
+      red: [makeResourceReq()],
+      blue: [makeResourceReq()],
       won: false,
     },
   };

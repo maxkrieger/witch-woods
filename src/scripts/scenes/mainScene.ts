@@ -5,12 +5,15 @@ import {
   InventoryEntry,
   Player,
   ResourceType,
+  Team,
 } from "../../gamestate";
-import Mushroom from "../objects/mushroom";
+import Mushroom from "../objects/staticResource";
 import Pentagram from "../objects/pentagram";
 import Resource from "../objects/Resource";
 import Witch from "../objects/witch";
 import { io, Socket } from "socket.io-client";
+import Inventory from "../objects/inventory";
+import StaticResource from "../objects/staticResource";
 
 interface GameObjects {
   sprites: { [id: string]: Phaser.Physics.Arcade.Sprite };
@@ -23,6 +26,9 @@ export default class MainScene extends Phaser.Scene {
   movementSendInterval: Phaser.Time.TimerEvent;
   myID: string;
   socket: Socket;
+  inventorySprite: Inventory;
+  bluePentagram: Pentagram;
+  pentagramInRange: boolean;
   constructor() {
     super({ key: "MainScene" });
     this.gameObjects = {
@@ -59,16 +65,18 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.right?.on("down", this.setPlayerX(300));
     this.cursor.right?.on("up", this.setPlayerX(0));
 
-    const pentagram = new Pentagram(this, 1200, 400, "red_team");
+    this.bluePentagram = new Pentagram(this, 1200, 400, "blue_team");
+    this.inventorySprite = new Inventory(this);
+    console.log(this.inventorySprite);
 
     // this.lights.enable().setAmbientColor(0x555555);
 
-    // this.physics.add.collider(this.gameObjects.sprites["bla"], pentagram);
+    // TODO: process.env
     const socket = io("ws://localhost:6660");
     this.socket = socket;
     socket.on("connect", () => {
       console.log("SOCKET CONNECTED", socket.connected, socket.id);
-      socket.emit("join", { name: "max", team: "RED" });
+      socket.emit("join", { name: "max", team: Team.BLUE });
     });
     socket.on("myPlayer", (player: Player) => {
       this.myID = player.id;
@@ -97,18 +105,10 @@ export default class MainScene extends Phaser.Scene {
     socket.on("gameState", (state: GameState) => {
       Object.values(state.objects).forEach((resource) => {
         if (!(resource.id in this.gameObjects.sprites)) {
-          switch (resource.resourceType) {
-            case ResourceType.MUSHROOM:
-              this.gameObjects.sprites[resource.id] = new Mushroom(
-                this,
-                resource.x,
-                resource.y,
-                resource.id
-              );
-              break;
-            case ResourceType.GEM:
-              break;
-          }
+          this.gameObjects.sprites[resource.id] = new StaticResource(
+            this,
+            resource
+          );
         } else {
           (this.gameObjects.sprites[resource.id] as Resource).onUpdate(
             resource
@@ -136,6 +136,9 @@ export default class MainScene extends Phaser.Scene {
           }
         } else {
           (this.gameObjects.sprites[player.id] as Witch).onUpdate(player);
+          if (player.id === this.myID) {
+            this.inventorySprite.setInventoryState(player.inventory);
+          }
         }
       });
     });
@@ -210,6 +213,26 @@ export default class MainScene extends Phaser.Scene {
       } else {
         this.setFocusedResource(null);
       }
+      const pentagramRange = Phaser.Math.Distance.Between(
+        this.gameObjects.sprites[this.myID].x,
+        this.gameObjects.sprites[this.myID].y,
+        this.bluePentagram.x,
+        this.bluePentagram.y
+      );
+      if (pentagramRange <= 200) {
+        this.setPentagramInRange(true);
+      } else {
+        this.setPentagramInRange(false);
+      }
     }
+    this.children.bringToTop(this.inventorySprite);
   }
+  setPentagramInRange = (inRange: boolean) => {
+    if (inRange !== this.pentagramInRange) {
+      this.pentagramInRange = inRange;
+      if (inRange) {
+        this.socket.emit("dumpItems");
+      }
+    }
+  };
 }
