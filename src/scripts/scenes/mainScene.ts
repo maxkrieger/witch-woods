@@ -47,8 +47,8 @@ export default class MainScene extends Phaser.Scene {
   }
 
   create() {
-    this.cameras.main.setBounds(0, 0, 5000, 5000);
-    this.physics.world.setBounds(0, 0, 5000, 5000);
+    this.cameras.main.setBounds(0, 0, 5000, 2900);
+    this.physics.world.setBounds(0, 0, 5000, 2900);
     //this.add.image(0, 0, "bg").setOrigin(0);
     //this.add.image(688, 0, "bg").setFlipX(true).setOrigin(0);
     //this.add.image(1376, 0, "bg").setOrigin(0);
@@ -78,7 +78,7 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.right?.on("down", this.setPlayerX(300));
     this.cursor.right?.on("up", this.setPlayerX(0));
 
-    this.bluePentagram = new Pentagram(this, 1200, 400, "blue_team");
+    this.bluePentagram = new Pentagram(this, 2500, 1700, "blue_team");
     this.inventorySprite = new Inventory(this);
     this.requirementsSprite = new RequirementHUD(this);
     console.log(this.inventorySprite);
