@@ -100,16 +100,20 @@ const makeResourceReq = (type: ResourceType): ResourceRequirement => ({
   resourceType: type,
 });
 
-export const makePlayer = (name: string, team: Team): Player => ({
-  name,
-  id: v4(),
-  x: random(0, 1000),
-  y: random(0, 1000),
-  team,
-  inventory: [],
-  moving: false,
-  facing: Facing.RIGHT,
-});
+export const makePlayer = (name: string, team: Team): Player => {
+  const x = team === Team.RED ? 4140 : 920;
+  const y = team === Team.RED ? 445 : 445;
+  return {
+    name,
+    id: v4(),
+    x: random(x - 50, x + 50),
+    y: random(y - 50, y + 50),
+    team,
+    inventory: [],
+    moving: false,
+    facing: Facing.RIGHT,
+  };
+};
 
 export default (): GameState => {
   const init: GameState = {
