@@ -11,6 +11,7 @@ import gamestate, {
   Team,
 } from "../src/gamestate";
 import { stringify } from "uuid";
+import { partition } from "lodash";
 
 const server = express();
 
@@ -87,9 +88,17 @@ setInterval(() => {
   });
 }, 250);
 
+const balancedNextTeam = (roomid: string) => {
+  const [reds, blues] = partition(
+    Object.values(rooms[roomid].players),
+    (player) => player.team === Team.RED
+  );
+  return reds.length > blues.length ? Team.BLUE : Team.RED;
+};
+
 io.on("connection", (socket: Socket) => {
-  socket.on("join", ({ name, team }: { name: string; team: Team }) => {
-    const playerInit = makePlayer(name, team);
+  socket.on("join", ({ name }: { name: string }) => {
+    const playerInit = makePlayer(name, balancedNextTeam("room1"));
     rooms["room1"].players[playerInit.id] = playerInit;
     socket.join("room1");
     socket.emit("myPlayer", playerInit);

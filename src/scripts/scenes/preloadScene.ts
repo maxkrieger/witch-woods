@@ -11,6 +11,11 @@ export default class PreloadScene extends Phaser.Scene {
       "assets/img/sprites/sprite_sheet/sprite_sheet_blue.png",
       { frameWidth: 230, frameHeight: 230 }
     );
+    this.load.spritesheet(
+      "witch_red",
+      "assets/img/sprites/sprite_sheet/sprite_sheet_pink.png",
+      { frameWidth: 230, frameHeight: 230 }
+    );
     this.load.image("pentagram", [
       "assets/img/summon_circle.png",
       "assets/img/norm.png",

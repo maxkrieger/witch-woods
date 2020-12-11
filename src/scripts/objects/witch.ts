@@ -1,5 +1,5 @@
 import { isEqual } from "lodash";
-import { Facing, Player } from "../../gamestate";
+import { Facing, Player, Team } from "../../gamestate";
 
 export default class Witch extends Phaser.Physics.Arcade.Sprite {
   isMe: boolean;
@@ -8,14 +8,17 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
   facing: Facing;
   moving: boolean;
   prevState: Player;
+  team: Team;
   constructor(
     scene: Phaser.Scene,
     x: number,
     y: number,
     id: string,
-    isMe: boolean
+    isMe: boolean,
+    team: Team
   ) {
-    super(scene, x, y, "witch_blue");
+    super(scene, x, y, `witch_${team}`);
+    this.team = team;
     this.isMe = isMe;
     this.id = id;
     scene.add.existing(this);
@@ -65,7 +68,44 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
       repeat: -1,
       frameRate: 10,
     });
-    this.anims.play(`blue_${this.facing}`);
+
+    scene.anims.create({
+      key: "red_right",
+      frames: scene.anims.generateFrameNumbers("witch_red", {
+        start: 0,
+        end: 1,
+      }),
+      repeat: -1,
+      frameRate: 10,
+    });
+    scene.anims.create({
+      key: "red_left",
+      frames: scene.anims.generateFrameNumbers("witch_red", {
+        start: 2,
+        end: 3,
+      }),
+      repeat: -1,
+      frameRate: 10,
+    });
+    scene.anims.create({
+      key: "red_up",
+      frames: scene.anims.generateFrameNumbers("witch_red", {
+        start: 4,
+        end: 6,
+      }),
+      repeat: -1,
+      frameRate: 10,
+    });
+    scene.anims.create({
+      key: "red_down",
+      frames: scene.anims.generateFrameNumbers("witch_red", {
+        start: 7,
+        end: 10,
+      }),
+      repeat: -1,
+      frameRate: 10,
+    });
+    this.anims.play(`${team}_${this.facing}`);
     this.anims.pause();
   }
 
@@ -93,7 +133,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
   };
   setFacing = (facing: Facing) => {
     if (this.moving && facing != this.facing) {
-      this.anims.play(`blue_${facing}`, true);
+      this.anims.play(`${this.team}_${facing}`, true);
     }
     this.facing = facing;
   };

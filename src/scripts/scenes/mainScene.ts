@@ -147,7 +147,8 @@ export default class MainScene extends Phaser.Scene {
             player.x,
             player.y,
             player.id,
-            player.id === this.myID
+            player.id === this.myID,
+            player.team
           );
           if (player.id === this.myID) {
             this.cameras.main.startFollow(
