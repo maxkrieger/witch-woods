@@ -42,8 +42,8 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
 
     //load tilemap stuff
-    this.load.tilemapTiledJSON("level1", "assets/tilemaps/maps/testMap.json");
-    this.load.image("testMapLarge", "assets/tilemaps/maps/testMapLarge.png");
+    this.load.tilemapTiledJSON('level1', 'assets/tilemaps/bgFull/bgFullJSON.json');
+    this.load.image('bgFull', 'assets/tilemaps/bgFull/bgFullIMG.png');
   }
 
   create() {
@@ -54,9 +54,12 @@ export default class MainScene extends Phaser.Scene {
     //this.add.image(688, 0, "bg").setFlipX(true).setOrigin(0);
     //this.add.image(1376, 0, "bg").setOrigin(0);
     //tilemap add:
-    var map = this.make.tilemap({ key: "level1" });
-    var tileset = map.addTilesetImage("woodsLarge", "testMapLarge");
-    var layer = map.createStaticLayer("MapLayer", tileset);
+    var map = this.make.tilemap({ key: 'level1' });
+    //var tilesetGround = map.addTilesetImage('mapFull', 'bgFull');
+    
+    var tilesetGround = map.addTilesetImage('mapTiled', 'bgFull');
+    var layer = map.createStaticLayer('GroundLayer', tilesetGround);
+    //layer.scale = 4;
 
     this.cursor = this.input.keyboard.createCursorKeys();
     this.cursor.down?.setEmitOnRepeat(true);
