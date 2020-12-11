@@ -14,6 +14,7 @@ import Witch from "../objects/witch";
 import { io, Socket } from "socket.io-client";
 import Inventory from "../objects/inventory";
 import StaticResource from "../objects/staticResource";
+import RequirementHUD from "../objects/requirementHUD";
 
 interface GameObjects {
   sprites: { [id: string]: Phaser.Physics.Arcade.Sprite };
@@ -27,6 +28,7 @@ export default class MainScene extends Phaser.Scene {
   myID: string;
   socket: Socket;
   inventorySprite: Inventory;
+  requirementsSprite: RequirementHUD;
   bluePentagram: Pentagram;
   pentagramInRange: boolean;
   constructor() {
@@ -38,11 +40,10 @@ export default class MainScene extends Phaser.Scene {
   }
   preload() {
     this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
-    
-    //load tilemap stuff
-    this.load.tilemapTiledJSON('level1', 'assets/tilemaps/maps/testMap.json');
-    this.load.image('testMapLarge', 'assets/tilemaps/maps/testMapLarge.png');
 
+    //load tilemap stuff
+    this.load.tilemapTiledJSON("level1", "assets/tilemaps/maps/testMap.json");
+    this.load.image("testMapLarge", "assets/tilemaps/maps/testMapLarge.png");
   }
 
   create() {
@@ -52,9 +53,9 @@ export default class MainScene extends Phaser.Scene {
     //this.add.image(688, 0, "bg").setFlipX(true).setOrigin(0);
     //this.add.image(1376, 0, "bg").setOrigin(0);
     //tilemap add:
-    var map = this.make.tilemap({ key: 'level1' });
-    var tileset = map.addTilesetImage('woodsLarge', 'testMapLarge');
-    var layer = map.createStaticLayer('MapLayer', tileset);
+    var map = this.make.tilemap({ key: "level1" });
+    var tileset = map.addTilesetImage("woodsLarge", "testMapLarge");
+    var layer = map.createStaticLayer("MapLayer", tileset);
 
     this.cursor = this.input.keyboard.createCursorKeys();
     this.cursor.down?.setEmitOnRepeat(true);
@@ -76,6 +77,7 @@ export default class MainScene extends Phaser.Scene {
 
     this.bluePentagram = new Pentagram(this, 1200, 400, "blue_team");
     this.inventorySprite = new Inventory(this);
+    this.requirementsSprite = new RequirementHUD(this);
     console.log(this.inventorySprite);
 
     // this.lights.enable().setAmbientColor(0x555555);
@@ -112,6 +114,9 @@ export default class MainScene extends Phaser.Scene {
       delete this.gameObjects.sprites[resourceID];
     });
     socket.on("gameState", (state: GameState) => {
+      this.requirementsSprite.setRequirements(
+        state.status[state.players[this.myID].team]
+      );
       Object.values(state.objects).forEach((resource) => {
         if (!(resource.id in this.gameObjects.sprites)) {
           this.gameObjects.sprites[resource.id] = new StaticResource(

@@ -2,28 +2,31 @@ import { v4 } from "uuid";
 import { random, times } from "lodash";
 
 export enum ResourceType {
+  PINECONE = "pinecone",
   MUSHROOM = "mushroom",
-  GEM = "gem",
 }
 
 export interface ResourceDefinition {
   type: ResourceType;
   maxHealth: number;
+  spriteIndex: number;
 }
 
 export const MushroomResource: ResourceDefinition = {
   type: ResourceType.MUSHROOM,
   maxHealth: 5,
+  spriteIndex: 1,
 };
 
-export const GemResource: ResourceDefinition = {
-  type: ResourceType.MUSHROOM,
+export const PineconeResource: ResourceDefinition = {
+  type: ResourceType.PINECONE,
   maxHealth: 10,
+  spriteIndex: 0,
 };
 
 export const resourceTypes: { [id in ResourceType]: ResourceDefinition } = {
   mushroom: MushroomResource,
-  gem: GemResource,
+  pinecone: PineconeResource,
 };
 
 export enum Team {
@@ -31,10 +34,12 @@ export enum Team {
   BLUE = "blue",
 }
 
-export interface InventoryEntry {
+export interface InventoryEntryI {
   resourceType: ResourceType;
   quantity: number;
 }
+
+export type InventoryEntry = InventoryEntryI | null;
 
 export enum Facing {
   LEFT = "left",
@@ -89,10 +94,10 @@ const makeResource = (definition: ResourceDefinition): GameObject => ({
   channeling: null,
 });
 
-const makeResourceReq = (): ResourceRequirement => ({
+const makeResourceReq = (type: ResourceType): ResourceRequirement => ({
   quantity: 0,
   quantityRequired: random(2, 10),
-  resourceType: ResourceType.MUSHROOM,
+  resourceType: type,
 });
 
 export const makePlayer = (name: string, team: Team): Player => ({
@@ -111,14 +116,23 @@ export default (): GameState => {
     players: {},
     objects: {},
     status: {
-      red: [makeResourceReq()],
-      blue: [makeResourceReq()],
+      red: [
+        makeResourceReq(ResourceType.MUSHROOM),
+        makeResourceReq(ResourceType.PINECONE),
+      ],
+      blue: [
+        makeResourceReq(ResourceType.MUSHROOM),
+        makeResourceReq(ResourceType.PINECONE),
+      ],
       won: false,
     },
   };
-  times(20, () => makeResource(MushroomResource)).forEach(
+  times(10, () => makeResource(MushroomResource)).forEach(
     (item) => (init.objects[item.id] = item)
   );
 
+  times(10, () => makeResource(PineconeResource)).forEach(
+    (item) => (init.objects[item.id] = item)
+  );
   return init;
 };

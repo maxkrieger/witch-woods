@@ -15,7 +15,8 @@ export default abstract class Resource extends Phaser.Physics.Arcade.Sprite {
     id: string,
     resource: ResourceDefinition
   ) {
-    super(scene, x, y, resource.type);
+    super(scene, x, y, "staticResources");
+    this.setFrame(resource.spriteIndex);
     scene.add.existing(this);
     this.id = id;
     this.maxHealth = resource.maxHealth;
