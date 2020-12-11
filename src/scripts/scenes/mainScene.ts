@@ -69,7 +69,7 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.right?.on("down", this.setPlayerX(300));
     this.cursor.right?.on("up", this.setPlayerX(0));
 
-    const pentagram = new Pentagram(this, 1200, 400, "red_team");
+    const pentagram = new Pentagram(this, 2500, 1700, "red_team");
 
     // this.lights.enable().setAmbientColor(0x555555);
 
