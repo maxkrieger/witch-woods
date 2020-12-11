@@ -7,6 +7,7 @@ import {
 } from "../../gamestate";
 
 const SIZE = 100;
+const SLOTS = 8;
 export default class RequirementHUD extends Phaser.GameObjects.Grid {
   requirements: ResourceRequirement[];
   images: Phaser.GameObjects.Image[];
@@ -14,9 +15,9 @@ export default class RequirementHUD extends Phaser.GameObjects.Grid {
   constructor(scene: Phaser.Scene) {
     super(
       scene,
-      scene.cameras.main.centerX - SIZE * 2,
+      scene.cameras.main.centerX - SIZE * (SLOTS / 2),
       1,
-      4 * SIZE,
+      8 * SIZE,
       1 * SIZE,
       SIZE,
       SIZE,
@@ -26,7 +27,7 @@ export default class RequirementHUD extends Phaser.GameObjects.Grid {
       0.3
     );
     this.images = [];
-    this.texts = times(4, (idx) => {
+    this.texts = times(8, (idx) => {
       const text = new Phaser.GameObjects.Text(
         this.scene,
         this.x + SIZE * idx,
@@ -43,7 +44,18 @@ export default class RequirementHUD extends Phaser.GameObjects.Grid {
     this.setOrigin(0);
     scene.add.existing(this);
     this.setScrollFactor(0);
+    const instructionText = new Phaser.GameObjects.Text(
+      this.scene,
+      this.x - 50,
+      SIZE + 10,
+      "get these^",
+      { color: "#ffffff", fontSize: "30px" }
+    );
+    instructionText.setOrigin(0);
+    instructionText.setScrollFactor(0);
+    scene.add.existing(instructionText);
   }
+
   setRequirements(requirements: ResourceRequirement[]) {
     if (!isEqual(requirements, this.requirements)) {
       this.requirements = requirements;

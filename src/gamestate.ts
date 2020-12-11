@@ -4,6 +4,8 @@ import { random, times } from "lodash";
 export enum ResourceType {
   PINECONE = "pinecone",
   MUSHROOM = "mushroom",
+  ROSE = "rose",
+  IVY = "ivy",
 }
 
 export interface ResourceDefinition {
@@ -24,9 +26,23 @@ export const PineconeResource: ResourceDefinition = {
   spriteIndex: 0,
 };
 
+export const RoseResource: ResourceDefinition = {
+  type: ResourceType.ROSE,
+  maxHealth: 2,
+  spriteIndex: 2,
+};
+
+export const IvyResource: ResourceDefinition = {
+  type: ResourceType.IVY,
+  maxHealth: 3,
+  spriteIndex: 5,
+};
+
 export const resourceTypes: { [id in ResourceType]: ResourceDefinition } = {
   mushroom: MushroomResource,
   pinecone: PineconeResource,
+  rose: RoseResource,
+  ivy: IvyResource,
 };
 
 export enum Team {
@@ -123,10 +139,12 @@ export default (): GameState => {
       red: [
         makeResourceReq(ResourceType.MUSHROOM),
         makeResourceReq(ResourceType.PINECONE),
+        makeResourceReq(ResourceType.ROSE),
       ],
       blue: [
         makeResourceReq(ResourceType.MUSHROOM),
         makeResourceReq(ResourceType.PINECONE),
+        makeResourceReq(ResourceType.ROSE),
       ],
       won: false,
     },
@@ -136,6 +154,9 @@ export default (): GameState => {
   );
 
   times(10, () => makeResource(PineconeResource)).forEach(
+    (item) => (init.objects[item.id] = item)
+  );
+  times(10, () => makeResource(RoseResource)).forEach(
     (item) => (init.objects[item.id] = item)
   );
   return init;
