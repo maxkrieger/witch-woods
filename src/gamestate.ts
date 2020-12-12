@@ -105,8 +105,8 @@ export interface GameState {
 
 const makeResource = (definition: ResourceDefinition): GameObject => ({
   id: v4(),
-  x: random(0, 5000),
-  y: random(0, 2900),
+  x: random(0, 10000),
+  y: random(0, 5800),
   resourceType: definition.type,
   health: definition.maxHealth,
   channeling: null,

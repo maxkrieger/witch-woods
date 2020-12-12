@@ -46,24 +46,30 @@ export default class MainScene extends Phaser.Scene {
     //load tilemap stuff
     this.load.tilemapTiledJSON(
       "level1",
-      "assets/tilemaps/bgFull/bgFullJSON.json"
+      "assets/tilemaps/bgFull/bgFull.json"
     );
-    this.load.image("bgFull", "assets/tilemaps/bgFull/bgFullIMG.png");
+    this.load.image("bgFull", "assets/tilemaps/bgFull/bgFull.png");
+    this.load.image(
+      "treeSheet", 
+      "/Users/huwmessie/Documents/GitHub/witch-woods/src/assets/img/env_static/trees/treeSheet.png"
+    );
   }
 
   create() {
     console.log(process.env.NODE_ENV);
-    this.cameras.main.setBounds(0, 0, 5000, 2900);
-    this.physics.world.setBounds(0, 0, 5000, 2900);
+    this.cameras.main.setBounds(0, 0, 10000, 5800);
+    this.physics.world.setBounds(0, 0, 10000, 5800);
     //this.add.image(0, 0, "bg").setOrigin(0);
     //this.add.image(688, 0, "bg").setFlipX(true).setOrigin(0);
     //this.add.image(1376, 0, "bg").setOrigin(0);
     //tilemap add:
     var map = this.make.tilemap({ key: "level1" });
     //var tilesetGround = map.addTilesetImage('mapFull', 'bgFull');
-
     var tilesetGround = map.addTilesetImage("mapTiled", "bgFull");
-    var layer = map.createStaticLayer("GroundLayer", tilesetGround);
+    var layer = map.createStaticLayer("Ground", tilesetGround);
+
+    var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
+    var layer = map.createStaticLayer("Trees", tilesetTrees);
     //layer.scale = 4;
 
     this.cursor = this.input.keyboard.createCursorKeys();
@@ -84,8 +90,8 @@ export default class MainScene extends Phaser.Scene {
     this.cursor.right?.on("down", this.setPlayerX(300));
     this.cursor.right?.on("up", this.setPlayerX(0));
 
-    this.bluePentagram = new Pentagram(this, 920, 445, Team.BLUE);
-    this.redPentagram = new Pentagram(this, 4140, 445, Team.RED);
+    this.bluePentagram = new Pentagram(this, 1776, 1024, Team.BLUE);
+    this.redPentagram = new Pentagram(this, 8400, 1024, Team.RED);
     this.inventorySprite = new Inventory(this);
     this.requirementsSprite = new RequirementHUD(this);
     console.log(this.inventorySprite);

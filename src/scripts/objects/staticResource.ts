@@ -15,7 +15,7 @@ export default class StaticResource extends Resource {
       resource.id,
       resourceTypes[resource.resourceType]
     );
-    this.displayWidth = 70;
+    this.displayWidth = 100;
     this.displayHeight = 120;
   }
 }
