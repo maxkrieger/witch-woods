@@ -105,8 +105,8 @@ export interface GameState {
 
 const makeResource = (definition: ResourceDefinition): GameObject => ({
   id: v4(),
-  x: random(0, 5000),
-  y: random(0, 2900),
+  x: random(0, 10000),
+  y: random(0, 5800),
   resourceType: definition.type,
   health: definition.maxHealth,
   channeling: null,
@@ -119,8 +119,8 @@ const makeResourceReq = (type: ResourceType): ResourceRequirement => ({
 });
 
 export const makePlayer = (name: string, team: Team): Player => {
-  const x = team === Team.RED ? 4140 : 920;
-  const y = team === Team.RED ? 445 : 445;
+  const x = team === Team.RED ? 8400: 1776;
+  const y = team === Team.RED ? 1024 : 1024;
   return {
     name,
     id: v4(),
