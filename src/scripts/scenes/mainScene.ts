@@ -50,7 +50,8 @@ export default class MainScene extends Phaser.Scene {
     
     var tilesetGround = map.addTilesetImage('mapTiled', 'bgFull');
     var layer = map.createStaticLayer('GroundLayer', tilesetGround);
-    layer.scale = 2;
+    //layer.scale = 3;
+
     this.cursor = this.input.keyboard.createCursorKeys();
     this.cursor.down?.setEmitOnRepeat(true);
     this.cursor.up?.setEmitOnRepeat(true);
