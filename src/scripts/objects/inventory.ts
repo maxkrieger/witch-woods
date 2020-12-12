@@ -24,7 +24,22 @@ export default class Inventory extends Phaser.GameObjects.Grid {
       0xffffff,
       0.3
     );
-    this.images = [];
+    this.images = times(4, (idx) => {
+      const img = new Phaser.GameObjects.Image(
+        this.scene,
+        this.x + SIZE * idx,
+        this.scene.cameras.main.y + this.scene.cameras.main.height - SIZE,
+        "staticResources"
+      );
+      img.setOrigin(0);
+      img.setScrollFactor(0);
+      img.setFrame(0);
+      img.setDisplaySize(SIZE, SIZE);
+      img.setVisible(false);
+      this.scene.add.existing(img);
+      this.scene.children.bringToTop(img);
+      return img;
+    });
     this.texts = times(4, (idx) => {
       const text = new Phaser.GameObjects.Text(
         this.scene,
@@ -46,32 +61,19 @@ export default class Inventory extends Phaser.GameObjects.Grid {
   setInventoryState(inventoryState: InventoryEntry[]) {
     if (!isEqual(inventoryState, this.inventoryState)) {
       this.inventoryState = inventoryState;
-      this.images.forEach((img) => {
-        if (img) {
-          img.destroy();
-        }
-      });
       inventoryState.forEach((et, idx) => {
         if (et === null) {
           this.texts[idx].setText("");
+          this.images[idx].setVisible(false);
           return;
         }
         const entry = et as InventoryEntryI;
-        this.images[idx] = new Phaser.GameObjects.Image(
-          this.scene,
-          this.x + SIZE * idx,
-          this.scene.cameras.main.y + this.scene.cameras.main.height - SIZE,
-          "staticResources"
-        );
         this.texts[idx].setText(et.quantity.toString());
-        this.images[idx].setOrigin(0);
-        this.images[idx].setScrollFactor(0);
+
         this.images[idx].setFrame(
           resourceTypes[entry.resourceType].spriteIndex
         );
-        this.images[idx].setDisplaySize(SIZE, SIZE);
-        this.scene.add.existing(this.images[idx]);
-        this.scene.children.bringToTop(this.images[idx]);
+        this.images[idx].setVisible(true);
       });
       console.log(inventoryState);
     }
