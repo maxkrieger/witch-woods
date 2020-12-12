@@ -51,7 +51,7 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("bgFull", "assets/tilemaps/bgFull/bgFull.png");
     this.load.image(
       "treeSheet", 
-      "/Users/huwmessie/Documents/GitHub/witch-woods/src/assets/img/env_static/trees/treeSheet.png"
+      "assets/img/env_static/trees/treeSheet.png"
     );
   }
 

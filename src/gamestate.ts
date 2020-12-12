@@ -119,7 +119,7 @@ const makeResourceReq = (type: ResourceType): ResourceRequirement => ({
 });
 
 export const makePlayer = (name: string, team: Team): Player => {
-  const x = team === Team.RED ? 8400 : 1776;
+  const x = team === Team.RED ? 8400: 1776;
   const y = team === Team.RED ? 1024 : 1024;
   return {
     name,
