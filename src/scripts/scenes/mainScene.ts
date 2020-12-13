@@ -62,8 +62,6 @@ export default class MainScene extends Phaser.Scene {
     var tilesetGround = map.addTilesetImage("mapTiled", "bgFull");
     var layer = map.createStaticLayer("Ground", tilesetGround);
 
-    var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
-    var layer = map.createStaticLayer("Trees", tilesetTrees);
     //layer.scale = 4;
 
     this.cursor = this.input.keyboard.createCursorKeys();
@@ -184,6 +182,8 @@ export default class MainScene extends Phaser.Scene {
     if (process.env.NODE_ENV !== "development") {
       this.debugText.setVisible(false);
     }
+    var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
+    var layer = map.createStaticLayer("Trees", tilesetTrees);
   }
 
   setChanneling = (channeling: boolean) => () => {
@@ -292,6 +292,7 @@ export default class MainScene extends Phaser.Scene {
     } else {
       this.setPentagramInRange(false);
     }
+    this.children.bringToTop(this.inventorySprite);
   }
   setPentagramInRange = (inRange: boolean) => {
     if (inRange !== this.pentagramInRange) {
