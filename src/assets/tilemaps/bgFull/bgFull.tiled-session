@@ -3,6 +3,9 @@
     "expandedProjectPaths": [
     ],
     "fileStates": {
+        "": {
+            "scaleInDock": 0.1653
+        },
         "../bgFull.tsx": {
             "scaleInDock": 0.0625,
             "scaleInEditor": 0.015625
@@ -51,7 +54,7 @@
     ],
     "tileset.embedInMap": true,
     "tileset.tileSize": {
-        "height": 100,
-        "width": 100
+        "height": 1000,
+        "width": 1000
     }
 }
