@@ -47,7 +47,7 @@ export default class MainScene extends Phaser.Scene {
 
     //load tilemap stuff
     this.load.tilemapTiledJSON("level1", "assets/tilemaps/bgFull/bgFull.json");
-    this.load.image("bgFull", "assets/tilemaps/bgFull/bgFull.png");
+    this.load.image("bgFull", "assets/tilemaps/bgFull/bgFull.jpg");
     this.load.image("treeSheet", "assets/img/env_static/trees/treeSheet.png");
   }
 
