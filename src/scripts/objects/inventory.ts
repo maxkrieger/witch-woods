@@ -6,29 +6,37 @@ import {
 } from "../../gamestate";
 
 const SIZE = 100;
-export default class Inventory extends Phaser.GameObjects.Grid {
+export default class Inventory extends Phaser.GameObjects.Container {
   inventoryState: InventoryEntry[];
   images: Phaser.GameObjects.Image[];
   texts: Phaser.GameObjects.Text[];
+  grid: Phaser.GameObjects.Grid;
   constructor(scene: Phaser.Scene) {
     super(
       scene,
       scene.cameras.main.centerX - SIZE * 2,
-      scene.cameras.main.y + scene.cameras.main.height - SIZE,
+      scene.cameras.main.y + scene.cameras.main.height - SIZE
+    );
+    this.grid = new Phaser.GameObjects.Grid(
+      scene,
+      0,
+      0,
       4 * SIZE,
-      1 * SIZE,
+      SIZE,
       SIZE,
       SIZE,
       0x000000,
       0.5,
       0xffffff,
-      0.3
-    );
+      0.5
+    ).setOrigin(0);
+    this.add(this.grid);
+
     this.images = times(4, (idx) => {
       const img = new Phaser.GameObjects.Image(
         this.scene,
-        this.x + SIZE * idx,
-        this.scene.cameras.main.y + this.scene.cameras.main.height - SIZE,
+        SIZE * idx,
+        0,
         "staticResources"
       );
       img.setOrigin(0);
@@ -36,25 +44,26 @@ export default class Inventory extends Phaser.GameObjects.Grid {
       img.setFrame(0);
       img.setDisplaySize(SIZE, SIZE);
       img.setVisible(false);
-      this.scene.add.existing(img);
-      this.scene.children.bringToTop(img);
       return img;
     });
     this.texts = times(4, (idx) => {
       const text = new Phaser.GameObjects.Text(
         this.scene,
-        this.x + SIZE * idx,
-        this.scene.cameras.main.y + this.scene.cameras.main.height - 30,
+        SIZE * idx,
+        SIZE - 30,
         "",
-        { color: "#ffffff" }
+        {
+          color: "#ffffff",
+        }
       );
       text.setOrigin(0);
       text.setScrollFactor(0);
-      this.scene.add.existing(text);
       return text;
     });
 
-    this.setOrigin(0);
+    this.add(this.texts);
+    this.add(this.images);
+
     scene.add.existing(this);
     this.setScrollFactor(0);
   }
@@ -69,7 +78,6 @@ export default class Inventory extends Phaser.GameObjects.Grid {
         }
         const entry = et as InventoryEntryI;
         this.texts[idx].setText(et.quantity.toString());
-
         this.images[idx].setFrame(
           resourceTypes[entry.resourceType].spriteIndex
         );

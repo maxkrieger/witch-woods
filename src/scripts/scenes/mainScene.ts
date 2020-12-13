@@ -173,12 +173,13 @@ export default class MainScene extends Phaser.Scene {
       });
     });
 
-    this.debugText = new Phaser.GameObjects.Text(this, 10, 10, `loading`, {
+    this.debugText = new Phaser.GameObjects.Text(this, 10, 10, `connecting`, {
       color: "#FFFFFF",
     })
       .setOrigin(0)
       .setScrollFactor(0);
     this.add.existing(this.debugText);
+    this.children.bringToTop(this.debugText);
     if (process.env.NODE_ENV !== "development") {
       this.debugText.setVisible(false);
     }

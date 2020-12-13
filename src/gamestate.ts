@@ -1,6 +1,18 @@
 import { v4 } from "uuid";
 import { random, times } from "lodash";
 
+export enum Ability {
+  TELEPORT = "teleport",
+  TRAP = "trap",
+  NONE = "none",
+}
+
+export const abilityCooldowns: { [ability in Ability]: number } = {
+  [Ability.TELEPORT]: 30,
+  [Ability.TRAP]: 20,
+  [Ability.NONE]: 0,
+};
+
 export enum ResourceType {
   PINECONE = "pinecone",
   MUSHROOM = "mushroom",
@@ -12,30 +24,35 @@ export interface ResourceDefinition {
   type: ResourceType;
   maxHealth: number;
   spriteIndex: number;
+  ability: Ability;
 }
 
 export const MushroomResource: ResourceDefinition = {
   type: ResourceType.MUSHROOM,
   maxHealth: 5,
   spriteIndex: 1,
+  ability: Ability.TELEPORT,
 };
 
 export const PineconeResource: ResourceDefinition = {
   type: ResourceType.PINECONE,
   maxHealth: 10,
   spriteIndex: 0,
+  ability: Ability.TRAP,
 };
 
 export const RoseResource: ResourceDefinition = {
   type: ResourceType.ROSE,
   maxHealth: 2,
   spriteIndex: 2,
+  ability: Ability.TRAP,
 };
 
 export const IvyResource: ResourceDefinition = {
   type: ResourceType.IVY,
   maxHealth: 3,
   spriteIndex: 5,
+  ability: Ability.NONE,
 };
 
 // REGENERATE RESOURCES
@@ -119,7 +136,7 @@ const makeResourceReq = (type: ResourceType): ResourceRequirement => ({
 });
 
 export const makePlayer = (name: string, team: Team): Player => {
-  const x = team === Team.RED ? 8400: 1776;
+  const x = team === Team.RED ? 8400 : 1776;
   const y = team === Team.RED ? 1024 : 1024;
   return {
     name,
