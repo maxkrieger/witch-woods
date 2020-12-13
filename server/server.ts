@@ -129,6 +129,9 @@ io.on("connection", (socket: Socket) => {
         io.to("room1").emit("gameState", rooms["room1"]);
       }
     );
+    socket.on("explode", ({ x, y }: { x: number; y: number }) => {
+      io.to("room1").emit("explode", { x, y });
+    });
     socket.on(
       "channelResource",
       ({ id, channeling }: { id: string; channeling: boolean }) => {
@@ -146,6 +149,7 @@ io.on("connection", (socket: Socket) => {
       }
     );
     socket.on("dumpItems", () => {
+      let dumped = false;
       rooms["room1"].players[playerInit.id].inventory.forEach(
         (invEntry, idx) => {
           if (invEntry === null) {
@@ -162,6 +166,7 @@ io.on("connection", (socket: Socket) => {
               matchingResourceType.quantityRequired -
               matchingResourceType.quantity;
             if (remainingNeeded > 0) {
+              dumped = true;
               const remainingGiven = Math.min(remainingNeeded, inv.quantity);
               (rooms["room1"].players[playerInit.id].inventory[
                 idx
@@ -176,11 +181,15 @@ io.on("connection", (socket: Socket) => {
               ) {
                 rooms["room1"].players[playerInit.id].inventory[idx] = null;
               }
-              io.to("room1").emit("gameState", rooms["room1"]);
             }
           }
         }
       );
+      if (dumped) {
+        io.to("room1").emit("gameState", rooms["room1"]);
+        const player = rooms["room1"].players[playerInit.id];
+        io.to("room1").emit("explode", { x: player.x, y: player.y });
+      }
     });
     socket.on("disconnect", () => {
       delete rooms["room1"].players[playerInit.id];

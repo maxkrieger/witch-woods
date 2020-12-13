@@ -33,6 +33,8 @@ export default class MainScene extends Phaser.Scene {
   bluePentagram: Pentagram;
   redPentagram: Pentagram;
   pentagramInRange: boolean;
+  particles: Phaser.GameObjects.Particles.ParticleEmitterManager;
+  debugText: Phaser.GameObjects.Text;
   constructor() {
     super({ key: "MainScene" });
     this.gameObjects = {
@@ -51,11 +53,9 @@ export default class MainScene extends Phaser.Scene {
 
   create() {
     console.log(process.env.NODE_ENV);
+
     this.cameras.main.setBounds(0, 0, 10000, 5800);
     this.physics.world.setBounds(0, 0, 10000, 5800);
-    //this.add.image(0, 0, "bg").setOrigin(0);
-    //this.add.image(688, 0, "bg").setFlipX(true).setOrigin(0);
-    //this.add.image(1376, 0, "bg").setOrigin(0);
     //tilemap add:
     var map = this.make.tilemap({ key: "level1" });
     //var tilesetGround = map.addTilesetImage('mapFull', 'bgFull');
@@ -88,6 +88,7 @@ export default class MainScene extends Phaser.Scene {
     this.redPentagram = new Pentagram(this, 8400, 1024, Team.RED);
     this.inventorySprite = new Inventory(this);
     this.requirementsSprite = new RequirementHUD(this);
+    this.particles = this.add.particles("particle_blue");
 
     // this.lights.enable().setAmbientColor(0x555555);
 
@@ -126,6 +127,9 @@ export default class MainScene extends Phaser.Scene {
       this.gameObjects.sprites[resourceID].destroy();
       delete this.gameObjects.sprites[resourceID];
     });
+    socket.on("explode", ({ x, y }: { x: number; y: number }) => {
+      this.particleEmit(x, y);
+    });
     socket.on("gameState", (state: GameState) => {
       this.requirementsSprite.setRequirements(
         state.status[state.players[this.myID].team]
@@ -161,7 +165,6 @@ export default class MainScene extends Phaser.Scene {
               100,
               100
             );
-            (this.gameObjects.sprites[this.myID] as Witch).particleEmit();
           }
         } else {
           (this.gameObjects.sprites[player.id] as Witch).onUpdate(player);
@@ -171,10 +174,21 @@ export default class MainScene extends Phaser.Scene {
         }
       });
     });
+
+    this.debugText = new Phaser.GameObjects.Text(this, 10, 10, `loading`, {
+      color: "#FFFFFF",
+    })
+      .setOrigin(0)
+      .setScrollFactor(0);
+    this.add.existing(this.debugText);
+    if (process.env.NODE_ENV !== "development") {
+      this.debugText.setVisible(false);
+    }
   }
 
   setChanneling = (channeling: boolean) => () => {
     const focused = this.registry.get("focusedResource");
+
     if (focused !== null) {
       this.socket.emit("channelResource", { id: focused, channeling });
     }
@@ -218,12 +232,33 @@ export default class MainScene extends Phaser.Scene {
       this.registry.set("focusedResource", id);
     }
   };
+  particleEmit = (x, y: number) => {
+    const emitter = this.particles.createEmitter({
+      x,
+      y,
+      speed: { min: 0, max: 900 },
+      scale: { start: 1, end: 0 },
+      lifespan: 300,
+      blendMode: Phaser.BlendModes.ADD,
+    });
 
+    emitter.setEmitZone({
+      type: "random",
+      source: new Phaser.Geom.Ellipse(0, 0, 200, 50),
+    } as any);
+    emitter.explode(30, x, y);
+  };
   update(time: number) {
     if (!this.myID) {
       return;
     }
-    // TODO: https://phaser.io/examples/v3/view/input/mouse/click-sprite
+    const myPlayer = this.gameObjects.sprites[this.myID];
+    this.debugText.setText(
+      `DEBUG: ${Math.floor(this.game.loop.actualFps)}fps, x: ${myPlayer.x} y: ${
+        myPlayer.y
+      }`
+    );
+
     Object.values(this.gameObjects.sprites).forEach((sprite) => {
       sprite.update();
     });
@@ -231,8 +266,8 @@ export default class MainScene extends Phaser.Scene {
       .filter((sprite: any) => sprite.isResource)
       .map(({ id }: any) => ({
         dist: Phaser.Math.Distance.Between(
-          this.gameObjects.sprites[this.myID].x,
-          this.gameObjects.sprites[this.myID].y,
+          myPlayer.x,
+          myPlayer.y,
           this.gameObjects.sprites[id].x,
           this.gameObjects.sprites[id].y
         ),
@@ -247,8 +282,8 @@ export default class MainScene extends Phaser.Scene {
     const myPentagram =
       this.myTeam === Team.RED ? this.redPentagram : this.bluePentagram;
     const pentagramRange = Phaser.Math.Distance.Between(
-      this.gameObjects.sprites[this.myID].x,
-      this.gameObjects.sprites[this.myID].y,
+      myPlayer.x,
+      myPlayer.y,
       myPentagram.x,
       myPentagram.y
     );
@@ -262,7 +297,6 @@ export default class MainScene extends Phaser.Scene {
     if (inRange !== this.pentagramInRange) {
       this.pentagramInRange = inRange;
       if (inRange) {
-        (this.gameObjects.sprites[this.myID] as Witch).particleEmit();
         this.socket.emit("dumpItems");
       }
     }

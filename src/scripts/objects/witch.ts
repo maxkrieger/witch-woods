@@ -10,7 +10,6 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
   moving: boolean;
   prevState: Player;
   team: Team;
-  particles: Phaser.GameObjects.Particles.ParticleEmitterManager;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -26,7 +25,6 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this);
     scene.physics.add.existing(this);
     this.body.enable = true;
-    this.particles = this.scene.add.particles("particle_blue");
 
     // TODO: set collision
     // this.body.setSize()
@@ -147,21 +145,6 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     }
     this.moving = moving;
   };
-  particleEmit = () => {
-    const emitter = this.particles.createEmitter({
-      x: this.x,
-      y: this.y,
-      speed: { min: 0, max: 900 },
-      scale: { start: 1, end: 0 },
-      lifespan: 200,
-      blendMode: BlendModes.ADD,
-    });
 
-    emitter.setEmitZone({
-      type: "edge",
-      source: new Geom.Ellipse(0, 0, 200, 50),
-    } as any);
-    emitter.explode(100, this.x, this.y);
-  };
   update = () => {};
 }
