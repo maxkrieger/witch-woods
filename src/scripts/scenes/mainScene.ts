@@ -44,9 +44,15 @@ export default class MainScene extends Phaser.Scene {
     this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
 
     //load tilemap stuff
-    this.load.tilemapTiledJSON("level1", "assets/tilemaps/bgFull/bgFull.json");
+    this.load.tilemapTiledJSON(
+      "level1",
+      "assets/tilemaps/bgFull/bgFull.json"
+    );
     this.load.image("bgFull", "assets/tilemaps/bgFull/bgFull.png");
-    this.load.image("treeSheet", "assets/img/env_static/trees/treeSheet.png");
+    this.load.image(
+      "treeSheet", 
+      "assets/img/env_static/trees/treeSheet.png"
+    );
   }
 
   create() {
@@ -62,8 +68,7 @@ export default class MainScene extends Phaser.Scene {
     var tilesetGround = map.addTilesetImage("mapTiled", "bgFull");
     var layer = map.createStaticLayer("Ground", tilesetGround);
 
-    var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
-    var layer = map.createStaticLayer("Trees", tilesetTrees);
+    
     //layer.scale = 4;
 
     this.cursor = this.input.keyboard.createCursorKeys();
@@ -88,6 +93,7 @@ export default class MainScene extends Phaser.Scene {
     this.redPentagram = new Pentagram(this, 8400, 1024, Team.RED);
     this.inventorySprite = new Inventory(this);
     this.requirementsSprite = new RequirementHUD(this);
+    console.log(this.inventorySprite);
 
     // this.lights.enable().setAmbientColor(0x555555);
 
@@ -171,6 +177,8 @@ export default class MainScene extends Phaser.Scene {
         }
       });
     });
+    var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
+    var layer = map.createStaticLayer("Trees", tilesetTrees);
   }
 
   setChanneling = (channeling: boolean) => () => {
@@ -220,43 +228,43 @@ export default class MainScene extends Phaser.Scene {
   };
 
   update(time: number) {
-    if (!this.myID) {
-      return;
-    }
     // TODO: https://phaser.io/examples/v3/view/input/mouse/click-sprite
-    Object.values(this.gameObjects.sprites).forEach((sprite) => {
-      sprite.update();
-    });
-    const inRange = Object.values(this.gameObjects.sprites)
-      .filter((sprite: any) => sprite.isResource)
-      .map(({ id }: any) => ({
-        dist: Phaser.Math.Distance.Between(
-          this.gameObjects.sprites[this.myID].x,
-          this.gameObjects.sprites[this.myID].y,
-          this.gameObjects.sprites[id].x,
-          this.gameObjects.sprites[id].y
-        ),
-        id,
-      }))
-      .sort((a, b) => a.dist - b.dist);
-    if (inRange.length > 0) {
-      this.setFocusedResource(inRange[0].dist <= 200 ? inRange[0].id : null);
-    } else {
-      this.setFocusedResource(null);
+    if (this.myID) {
+      Object.values(this.gameObjects.sprites).forEach((sprite) => {
+        sprite.update();
+      });
+      const inRange = Object.values(this.gameObjects.sprites)
+        .filter((sprite: any) => sprite.isResource)
+        .map(({ id }: any) => ({
+          dist: Phaser.Math.Distance.Between(
+            this.gameObjects.sprites[this.myID].x,
+            this.gameObjects.sprites[this.myID].y,
+            this.gameObjects.sprites[id].x,
+            this.gameObjects.sprites[id].y
+          ),
+          id,
+        }))
+        .sort((a, b) => a.dist - b.dist);
+      if (inRange.length > 0) {
+        this.setFocusedResource(inRange[0].dist <= 200 ? inRange[0].id : null);
+      } else {
+        this.setFocusedResource(null);
+      }
+      const myPentagram =
+        this.myTeam === Team.RED ? this.redPentagram : this.bluePentagram;
+      const pentagramRange = Phaser.Math.Distance.Between(
+        this.gameObjects.sprites[this.myID].x,
+        this.gameObjects.sprites[this.myID].y,
+        myPentagram.x,
+        myPentagram.y
+      );
+      if (pentagramRange <= 200) {
+        this.setPentagramInRange(true);
+      } else {
+        this.setPentagramInRange(false);
+      }
     }
-    const myPentagram =
-      this.myTeam === Team.RED ? this.redPentagram : this.bluePentagram;
-    const pentagramRange = Phaser.Math.Distance.Between(
-      this.gameObjects.sprites[this.myID].x,
-      this.gameObjects.sprites[this.myID].y,
-      myPentagram.x,
-      myPentagram.y
-    );
-    if (pentagramRange <= 200) {
-      this.setPentagramInRange(true);
-    } else {
-      this.setPentagramInRange(false);
-    }
+    this.children.bringToTop(this.inventorySprite);
   }
   setPentagramInRange = (inRange: boolean) => {
     if (inRange !== this.pentagramInRange) {
