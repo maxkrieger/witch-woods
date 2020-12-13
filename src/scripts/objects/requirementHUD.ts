@@ -6,82 +6,57 @@ import {
   resourceTypes,
 } from "../../gamestate";
 
-const SIZE = 100;
-const SLOTS = 8;
-export default class RequirementHUD extends Phaser.GameObjects.Grid {
+const SIZE = 50;
+export default class RequirementHUD extends Phaser.GameObjects.Container {
   requirements: ResourceRequirement[];
   images: Phaser.GameObjects.Image[];
   texts: Phaser.GameObjects.Text[];
   constructor(scene: Phaser.Scene) {
-    super(
-      scene,
-      scene.cameras.main.centerX - SIZE * (SLOTS / 2),
-      1,
-      8 * SIZE,
-      1 * SIZE,
-      SIZE,
-      SIZE,
-      0x000000,
-      0.5,
-      0xffffff,
-      0.3
-    );
-    this.images = [];
-    this.texts = times(8, (idx) => {
-      const text = new Phaser.GameObjects.Text(
-        this.scene,
-        this.x + SIZE * idx,
-        0,
-        "",
-        { color: "#ffffff" }
-      );
-      text.setOrigin(0);
-      text.setScrollFactor(0);
-      this.scene.add.existing(text);
-      return text;
-    });
+    super(scene, 30, 30);
 
-    this.setOrigin(0);
     scene.add.existing(this);
     this.setScrollFactor(0);
-    const instructionText = new Phaser.GameObjects.Text(
-      this.scene,
-      this.x - 50,
-      SIZE + 10,
-      "get these^",
-      { color: "#ffffff", fontSize: "30px" }
-    );
-    instructionText.setOrigin(0);
-    instructionText.setScrollFactor(0);
-    scene.add.existing(instructionText);
+    this.scene.children.bringToTop(this);
   }
 
   setRequirements(requirements: ResourceRequirement[]) {
-    if (!isEqual(requirements, this.requirements)) {
-      this.requirements = requirements;
-      this.images.forEach((img) => {
-        if (img) {
-          img.destroy();
-        }
-      });
-      requirements.forEach((et, idx) => {
-        this.images[idx] = new Phaser.GameObjects.Image(
+    if (!this.requirements) {
+      this.images = requirements.map((req, idx) => {
+        const img = new Phaser.GameObjects.Image(
           this.scene,
-          this.x + SIZE * idx,
           0,
+          SIZE * idx,
           "staticResources"
         );
-        this.texts[idx].setText(
-          `${et.quantity.toString()}/${et.quantityRequired.toString()}`
-        );
-        this.images[idx].setOrigin(0);
-        this.images[idx].setScrollFactor(0);
-        this.images[idx].setFrame(resourceTypes[et.resourceType].spriteIndex);
-        this.images[idx].setDisplaySize(SIZE, SIZE);
-        this.scene.add.existing(this.images[idx]);
-        this.scene.children.bringToTop(this.images[idx]);
+        img.setDisplaySize(SIZE, SIZE);
+        img.setOrigin(0);
+        img.setFrame(resourceTypes[req.resourceType].spriteIndex);
+        return img;
       });
-      console.log("reqs", requirements);
+      this.texts = requirements.map((req, idx) => {
+        const text = new Phaser.GameObjects.Text(
+          this.scene,
+          SIZE + 5,
+          SIZE * idx + SIZE / 2,
+          `${req.quantity}/${req.quantityRequired}`,
+          {
+            color: "#ffffff",
+          }
+        );
+        text.setOrigin(0);
+        return text;
+      });
+      this.add(this.images);
+      this.add(this.texts);
     }
+    if (!isEqual(requirements, this.requirements)) {
+      this.requirements = requirements;
+      this.requirements.forEach((req, idx) => {
+        this.images[idx].setFrame(resourceTypes[req.resourceType].spriteIndex);
+        this.texts[idx].setText(`${req.quantity}/${req.quantityRequired}`);
+      });
+      this.scene.children.bringToTop(this);
+    }
+    this.requirements = requirements;
   }
 }

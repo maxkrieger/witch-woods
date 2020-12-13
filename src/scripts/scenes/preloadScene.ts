@@ -5,7 +5,6 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("witch", ["assets/img/witch1.png", "assets/img/norm.png"]);
     this.load.spritesheet(
       "witch_blue",
       "assets/img/sprites/sprite_sheet/sprite_sheet_blue.png",
@@ -21,9 +20,9 @@ export default class PreloadScene extends Phaser.Scene {
       "assets/img/norm.png",
     ]);
 
-    this.load.spritesheet("staticResources", "assets/img/arden_assets.png", {
-      frameWidth: 500,
-      frameHeight: 500,
+    this.load.spritesheet("staticResources", "assets/img/items.png", {
+      frameWidth: 255,
+      frameHeight: 256,
     });
   }
 

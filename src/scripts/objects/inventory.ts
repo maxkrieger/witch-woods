@@ -74,8 +74,9 @@ export default class Inventory extends Phaser.GameObjects.Grid {
           resourceTypes[entry.resourceType].spriteIndex
         );
         this.images[idx].setVisible(true);
+        this.scene.children.bringToTop(this.images[idx]);
+        this.scene.children.bringToTop(this.texts[idx]);
       });
-      console.log(inventoryState);
     }
   }
 }
