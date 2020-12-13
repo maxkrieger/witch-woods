@@ -91,7 +91,6 @@ export default class MainScene extends Phaser.Scene {
 
     // this.lights.enable().setAmbientColor(0x555555);
 
-    // TODO: process.env
     const socket = io(
       process.env.NODE_ENV === "production"
         ? "wss://witch-woods.maxkrieger.repl.co"
@@ -162,6 +161,7 @@ export default class MainScene extends Phaser.Scene {
               100,
               100
             );
+            (this.gameObjects.sprites[this.myID] as Witch).particleEmit();
           }
         } else {
           (this.gameObjects.sprites[player.id] as Witch).onUpdate(player);
@@ -262,6 +262,7 @@ export default class MainScene extends Phaser.Scene {
     if (inRange !== this.pentagramInRange) {
       this.pentagramInRange = inRange;
       if (inRange) {
+        (this.gameObjects.sprites[this.myID] as Witch).particleEmit();
         this.socket.emit("dumpItems");
       }
     }

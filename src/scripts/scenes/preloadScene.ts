@@ -19,6 +19,7 @@ export default class PreloadScene extends Phaser.Scene {
       "assets/img/summon_circle.png",
       "assets/img/norm.png",
     ]);
+    this.load.image("particle_blue", "assets/img/particle.png");
 
     this.load.spritesheet("staticResources", "assets/img/items.png", {
       frameWidth: 255,
