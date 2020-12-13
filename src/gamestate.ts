@@ -3,13 +3,15 @@ import { random, times } from "lodash";
 
 export enum Ability {
   TELEPORT = "teleport",
-  TRAP = "trap",
+  ICE_TRAP = "icetrap",
+  SEEING_EYE = "seeingeye",
   NONE = "none",
 }
 
 export const abilityCooldowns: { [ability in Ability]: number } = {
   [Ability.TELEPORT]: 30,
-  [Ability.TRAP]: 20,
+  [Ability.ICE_TRAP]: 20,
+  [Ability.SEEING_EYE]: 30,
   [Ability.NONE]: 0,
 };
 
@@ -38,14 +40,14 @@ export const PineconeResource: ResourceDefinition = {
   type: ResourceType.PINECONE,
   maxHealth: 10,
   spriteIndex: 0,
-  ability: Ability.TRAP,
+  ability: Ability.ICE_TRAP,
 };
 
 export const RoseResource: ResourceDefinition = {
   type: ResourceType.ROSE,
   maxHealth: 2,
   spriteIndex: 2,
-  ability: Ability.TRAP,
+  ability: Ability.SEEING_EYE,
 };
 
 export const IvyResource: ResourceDefinition = {

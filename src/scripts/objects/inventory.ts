@@ -1,5 +1,6 @@
 import { isEqual, times } from "lodash";
 import {
+  Ability,
   InventoryEntry,
   InventoryEntryI,
   resourceTypes,
@@ -9,6 +10,8 @@ const SIZE = 100;
 export default class Inventory extends Phaser.GameObjects.Container {
   inventoryState: InventoryEntry[];
   images: Phaser.GameObjects.Image[];
+  abilityImages: Phaser.GameObjects.Image[];
+  abilityTexts: Phaser.GameObjects.Text[];
   texts: Phaser.GameObjects.Text[];
   grid: Phaser.GameObjects.Grid;
   constructor(scene: Phaser.Scene) {
@@ -40,9 +43,19 @@ export default class Inventory extends Phaser.GameObjects.Container {
         "staticResources"
       );
       img.setOrigin(0);
-      img.setScrollFactor(0);
       img.setFrame(0);
       img.setDisplaySize(SIZE, SIZE);
+      img.setVisible(false);
+      return img;
+    });
+    this.abilityImages = times(4, (idx) => {
+      const img = new Phaser.GameObjects.Image(
+        this.scene,
+        SIZE * idx + 50,
+        -40,
+        "icetrap_off"
+      );
+      img.setDisplaySize(50, 50);
       img.setVisible(false);
       return img;
     });
@@ -57,12 +70,26 @@ export default class Inventory extends Phaser.GameObjects.Container {
         }
       );
       text.setOrigin(0);
-      text.setScrollFactor(0);
+      return text;
+    });
+    this.abilityTexts = times(4, (idx) => {
+      const text = new Phaser.GameObjects.Text(
+        this.scene,
+        SIZE * idx,
+        -15,
+        ["Z", "X", "C", "V"][idx],
+        {
+          color: "#ffffff",
+        }
+      );
+      text.setVisible(false);
       return text;
     });
 
     this.add(this.texts);
     this.add(this.images);
+    this.add(this.abilityImages);
+    this.add(this.abilityTexts);
 
     scene.add.existing(this);
     this.setScrollFactor(0);
@@ -74,6 +101,7 @@ export default class Inventory extends Phaser.GameObjects.Container {
         if (et === null) {
           this.texts[idx].setText("");
           this.images[idx].setVisible(false);
+          this.abilityImages[idx].setVisible(false);
           return;
         }
         const entry = et as InventoryEntryI;
@@ -82,6 +110,16 @@ export default class Inventory extends Phaser.GameObjects.Container {
           resourceTypes[entry.resourceType].spriteIndex
         );
         this.images[idx].setVisible(true);
+        if (resourceTypes[entry.resourceType].ability !== Ability.NONE) {
+          this.abilityImages[idx].setTexture(
+            `${resourceTypes[entry.resourceType].ability}_on`
+          );
+          this.abilityTexts[idx].setVisible(true);
+          this.abilityImages[idx].setVisible(true);
+        } else {
+          this.abilityTexts[idx].setVisible(false);
+          this.abilityImages[idx].setVisible(false);
+        }
         this.scene.children.bringToTop(this.images[idx]);
         this.scene.children.bringToTop(this.texts[idx]);
       });
