@@ -1,10 +1,12 @@
 import {
+  Ability,
   Facing,
   GameObject,
   GameState,
   InventoryEntry,
   Player,
   ResourceType,
+  resourceTypes,
   Team,
 } from "../../gamestate";
 import Mushroom from "../objects/staticResource";
@@ -15,9 +17,10 @@ import { io, Socket } from "socket.io-client";
 import Inventory from "../objects/inventory";
 import StaticResource from "../objects/staticResource";
 import RequirementHUD from "../objects/requirementHUD";
+import IceTrap from "../objects/icetrap";
 
 interface GameObjects {
-  sprites: { [id: string]: Phaser.Physics.Arcade.Sprite };
+  sprites: { [id: string]: Phaser.GameObjects.Sprite };
   inventory: InventoryEntry[];
 }
 
@@ -35,6 +38,9 @@ export default class MainScene extends Phaser.Scene {
   pentagramInRange: boolean;
   particles: Phaser.GameObjects.Particles.ParticleEmitterManager;
   debugText: Phaser.GameObjects.Text;
+  infoText: Phaser.GameObjects.Text;
+  nearTrap: string | null = null;
+  placingTrap = false;
   constructor() {
     super({ key: "MainScene" });
     this.gameObjects = {
@@ -88,6 +94,13 @@ export default class MainScene extends Phaser.Scene {
     this.requirementsSprite = new RequirementHUD(this);
     this.particles = this.add.particles("particle_blue");
 
+    const keys = ["Z", "X", "C", "V"];
+    const spellKeys = this.input.keyboard.addKeys(keys.join(",")) as any;
+    spellKeys.Z?.on("down", this.handleSpellKey(0));
+    spellKeys.X?.on("down", this.handleSpellKey(1));
+    spellKeys.C?.on("down", this.handleSpellKey(2));
+    spellKeys.V?.on("down", this.handleSpellKey(3));
+
     // this.lights.enable().setAmbientColor(0x555555);
 
     const socket = io(
@@ -98,7 +111,7 @@ export default class MainScene extends Phaser.Scene {
     this.socket = socket;
     socket.on("connect", () => {
       console.log("SOCKET CONNECTED", socket.connected, socket.id);
-      socket.emit("join", { name: "max", team: Team.BLUE });
+      socket.emit("join", { name: "max" });
     });
     socket.on("myPlayer", (player: Player) => {
       this.myID = player.id;
@@ -128,10 +141,26 @@ export default class MainScene extends Phaser.Scene {
     socket.on("explode", ({ x, y }: { x: number; y: number }) => {
       this.particleEmit(x, y);
     });
+    socket.on("tellMessage", ({ message }: { message: string }) => {
+      this.displayInfoMessage(message, 2000);
+    });
     socket.on("gameState", (state: GameState) => {
       this.requirementsSprite.setRequirements(
         state.status[state.players[this.myID].team]
       );
+      Object.values(state.traps).forEach((trap) => {
+        if (!(trap.id in this.gameObjects.sprites)) {
+          this.gameObjects.sprites[trap.id] = new IceTrap(
+            this,
+            trap.x,
+            trap.y,
+            trap.team
+          );
+          if (trap.team !== state.players[this.myID].team) {
+            this.gameObjects.sprites[trap.id].setVisible(false);
+          }
+        }
+      });
       Object.values(state.objects).forEach((resource) => {
         if (!(resource.id in this.gameObjects.sprites)) {
           this.gameObjects.sprites[resource.id] = new StaticResource(
@@ -173,6 +202,9 @@ export default class MainScene extends Phaser.Scene {
       });
     });
 
+    var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
+    var layer = map.createStaticLayer("Trees", tilesetTrees);
+
     this.debugText = new Phaser.GameObjects.Text(this, 10, 10, `connecting`, {
       color: "#FFFFFF",
     })
@@ -183,9 +215,45 @@ export default class MainScene extends Phaser.Scene {
     if (process.env.NODE_ENV !== "development") {
       this.debugText.setVisible(false);
     }
-    var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
-    var layer = map.createStaticLayer("Trees", tilesetTrees);
+
+    this.infoText = new Phaser.GameObjects.Text(
+      this,
+      this.cameras.main.width / 2,
+      50,
+      ``,
+      {
+        color: "#FFFFFF",
+        fontSize: "50px",
+      }
+    ).setScrollFactor(0);
+    this.add.existing(this.infoText);
+    this.children.bringToTop(this.infoText);
   }
+
+  displayInfoMessage = (message: string, time?: number) => {
+    this.infoText.setText(message);
+    this.time.addEvent({
+      delay: time,
+      callback: () => {
+        this.infoText.setText("");
+      },
+      callbackScope: this,
+    });
+  };
+
+  handleSpellKey = (key: number) => () => {
+    const slotKey = this.inventorySprite.inventoryState[key];
+    if (slotKey !== null) {
+      switch (resourceTypes[slotKey.resourceType].ability) {
+        case Ability.NONE:
+          break;
+        case Ability.ICE_TRAP:
+          break;
+        default:
+          break;
+      }
+    }
+  };
 
   setChanneling = (channeling: boolean) => () => {
     const focused = this.registry.get("focusedResource");
@@ -233,7 +301,7 @@ export default class MainScene extends Phaser.Scene {
       this.registry.set("focusedResource", id);
     }
   };
-  particleEmit = (x, y: number) => {
+  particleEmit = (x: number, y: number) => {
     const emitter = this.particles.createEmitter({
       x,
       y,
@@ -264,8 +332,7 @@ export default class MainScene extends Phaser.Scene {
       sprite.update();
     });
     const inRange = Object.values(this.gameObjects.sprites)
-      .filter((sprite: any) => sprite.isResource)
-      .map(({ id }: any) => ({
+      .map(({ id, isResource, isTrap, team }: any) => ({
         dist: Phaser.Math.Distance.Between(
           myPlayer.x,
           myPlayer.y,
@@ -273,12 +340,34 @@ export default class MainScene extends Phaser.Scene {
           this.gameObjects.sprites[id].y
         ),
         id,
+        isResource,
+        isTrap,
+        team,
       }))
       .sort((a, b) => a.dist - b.dist);
-    if (inRange.length > 0) {
-      this.setFocusedResource(inRange[0].dist <= 200 ? inRange[0].id : null);
+    const resourcesInRange = inRange.filter(({ isTrap }) => isTrap);
+    if (resourcesInRange.length > 0) {
+      this.setFocusedResource(
+        resourcesInRange[0].dist <= 200 ? resourcesInRange[0].id : null
+      );
     } else {
       this.setFocusedResource(null);
+    }
+    const trapsInRange = inRange.filter(
+      ({ isTrap, team }) => isTrap && team !== this.myTeam
+    );
+    if (
+      trapsInRange.length > 0 &&
+      trapsInRange[0].dist <= 100 &&
+      !this.nearTrap
+    ) {
+      this.nearTrap = trapsInRange[0].id;
+      this.socket.emit("activateTrap", {
+        player: this.myID,
+        trap: trapsInRange[0].id,
+      });
+    } else {
+      this.nearTrap = null;
     }
     const myPentagram =
       this.myTeam === Team.RED ? this.redPentagram : this.bluePentagram;

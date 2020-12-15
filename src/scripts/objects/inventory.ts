@@ -102,6 +102,7 @@ export default class Inventory extends Phaser.GameObjects.Container {
           this.texts[idx].setText("");
           this.images[idx].setVisible(false);
           this.abilityImages[idx].setVisible(false);
+          this.abilityTexts[idx].setVisible(false);
           return;
         }
         const entry = et as InventoryEntryI;

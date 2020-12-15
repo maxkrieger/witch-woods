@@ -28,6 +28,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image("seeingeye_on", "assets/img/spell_icons/seeingeye_on.png");
     this.load.image("teleport_off", "assets/img/spell_icons/teleport_off.png");
     this.load.image("teleport_on", "assets/img/spell_icons/teleport_on.png");
+    this.load.image("ice_trap", "assets/img/icetrap_outline.png");
 
     this.load.image("particle_blue", "assets/img/particle.png");
 

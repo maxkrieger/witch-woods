@@ -63,11 +63,13 @@ setInterval(() => {
               rooms[id].players[playerID].inventory[firstNull] = {
                 quantity: 1,
                 resourceType: resource.resourceType,
+                cooldown: 0,
               };
             } else {
               rooms[id].players[playerID].inventory.push({
                 quantity: 1,
                 resourceType: resource.resourceType,
+                cooldown: 0,
               });
             }
           } else {
@@ -132,6 +134,12 @@ io.on("connection", (socket: Socket) => {
     socket.on("explode", ({ x, y }: { x: number; y: number }) => {
       io.to("room1").emit("explode", { x, y });
     });
+    socket.on(
+      "activateTrap",
+      ({ player, trap }: { player: string; trap: string }) => {
+        console.log("TRAP", player, trap);
+      }
+    );
     socket.on(
       "channelResource",
       ({ id, channeling }: { id: string; channeling: boolean }) => {

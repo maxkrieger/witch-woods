@@ -74,6 +74,7 @@ export enum Team {
 export interface InventoryEntryI {
   resourceType: ResourceType;
   quantity: number;
+  cooldown: number;
 }
 
 export type InventoryEntry = InventoryEntryI | null;
@@ -84,6 +85,17 @@ export enum Facing {
   UP = "up",
   DOWN = "down",
 }
+
+interface Normal {
+  kind: "normal";
+}
+
+interface IceTrapped {
+  kind: "ice_trapped";
+  remaining: number;
+}
+
+export type Effect = Normal | IceTrapped;
 export interface Player {
   name: string;
   id: string;
@@ -91,6 +103,7 @@ export interface Player {
   y: number;
   moving: boolean;
   facing: Facing;
+  effect: Effect;
   team: Team;
   inventory: InventoryEntry[];
 }
@@ -110,15 +123,30 @@ export interface ResourceRequirement {
   resourceType: ResourceType;
 }
 
+export interface Trap {
+  x: number;
+  y: number;
+  team: Team;
+  id: string;
+}
+
+export const makeTrap = (x: number, y: number, team: Team): Trap => ({
+  x,
+  y,
+  team,
+  id: v4(),
+});
+
 export interface Status {
   red: ResourceRequirement[];
   blue: ResourceRequirement[];
-  won: boolean;
+  state: "LOBBY" | "STARTED" | "ENDED";
 }
 
 export interface GameState {
   players: { [id: string]: Player };
   objects: { [id: string]: GameObject };
+  traps: { [id: string]: Trap };
   status: Status;
 }
 
@@ -146,9 +174,14 @@ export const makePlayer = (name: string, team: Team): Player => {
     x: random(x - 50, x + 50),
     y: random(y - 50, y + 50),
     team,
-    inventory: [],
+    inventory: [
+      { resourceType: ResourceType.MUSHROOM, quantity: 10, cooldown: 0 },
+      { resourceType: ResourceType.PINECONE, quantity: 10, cooldown: 0 },
+      { resourceType: ResourceType.ROSE, quantity: 10, cooldown: 0 },
+    ],
     moving: false,
-    facing: Facing.RIGHT,
+    facing: Facing.DOWN,
+    effect: { kind: "normal" },
   };
 };
 
@@ -156,6 +189,7 @@ export default (): GameState => {
   const init: GameState = {
     players: {},
     objects: {},
+    traps: {},
     status: {
       red: [
         makeResourceReq(ResourceType.MUSHROOM),
@@ -167,7 +201,7 @@ export default (): GameState => {
         makeResourceReq(ResourceType.PINECONE),
         makeResourceReq(ResourceType.ROSE),
       ],
-      won: false,
+      state: "LOBBY",
     },
   };
   times(10, () => makeResource(MushroomResource)).forEach(
