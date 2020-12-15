@@ -206,7 +206,32 @@ export default class MainScene extends Phaser.Scene {
             );
           }
         } else {
-          (this.gameObjects.sprites[player.id] as Witch).onUpdate(player);
+          const me = this.gameObjects.sprites[player.id] as Witch;
+          if (
+            me.effect.kind !== "seeing_eye" &&
+            player.effect.kind === "seeing_eye"
+          ) {
+            // show all enemy traps
+            Object.entries(this.gameObjects.sprites).forEach(
+              ([id, spr]: [string, any]) => {
+                if (spr.isTrap && spr.team !== this.myTeam) {
+                  spr.setVisible(true);
+                }
+              }
+            );
+          } else if (
+            player.effect.kind !== "seeing_eye" &&
+            me.effect.kind === "seeing_eye"
+          ) {
+            Object.entries(this.gameObjects.sprites).forEach(
+              ([id, spr]: [string, any]) => {
+                if (spr.isTrap && spr.team !== this.myTeam) {
+                  spr.setVisible(false);
+                }
+              }
+            );
+          }
+          me.onUpdate(player);
           if (player.id === this.myID) {
             this.inventorySprite.setInventoryState(player.inventory);
           }
@@ -314,6 +339,10 @@ export default class MainScene extends Phaser.Scene {
             x: myPentagram.x,
             y: myPentagram.y,
           });
+          break;
+        case Ability.SEEING_EYE:
+          this.socket.emit("seeingEye", { player: this.myID, slot: key });
+          break;
         default:
           break;
       }
