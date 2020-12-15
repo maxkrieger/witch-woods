@@ -4,7 +4,8 @@
     ],
     "fileStates": {
         "": {
-            "scaleInDock": 0.1653
+            "scaleInDock": 0.1601,
+            "scaleInEditor": 0.2252
         },
         "../bgFull.tsx": {
             "scaleInDock": 0.0625,
@@ -19,11 +20,11 @@
             }
         },
         "bgFull.json": {
-            "scale": 0.0701,
+            "scale": 0.0786,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 4942.938659058487,
-                "y": 2746.077032810271
+                "x": 4910.941475826972,
+                "y": 2538.167938931298
             }
         },
         "bgFull.json#mapTiled": {

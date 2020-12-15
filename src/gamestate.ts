@@ -27,34 +27,47 @@ export interface ResourceDefinition {
   maxHealth: number;
   spriteIndex: number;
   ability: Ability;
+  rangeX: [number,number];
+  rangeY: [number,number];
 }
 
 export const MushroomResource: ResourceDefinition = {
   type: ResourceType.MUSHROOM,
   maxHealth: 5,
-  spriteIndex: 1,
+  spriteIndex: 0,
   ability: Ability.TELEPORT,
+  rangeX: [0,2500],
+  rangeY: [0,5800]
 };
 
 export const PineconeResource: ResourceDefinition = {
   type: ResourceType.PINECONE,
   maxHealth: 10,
-  spriteIndex: 0,
+  spriteIndex: 4,
   ability: Ability.ICE_TRAP,
+
+  rangeX: [2500,5000],
+  rangeY: [0,5800]
 };
 
 export const RoseResource: ResourceDefinition = {
   type: ResourceType.ROSE,
   maxHealth: 2,
-  spriteIndex: 2,
+  spriteIndex: 7,
   ability: Ability.SEEING_EYE,
+
+  rangeX: [5000,7500],
+  rangeY: [0,5800]
 };
 
 export const IvyResource: ResourceDefinition = {
   type: ResourceType.IVY,
   maxHealth: 3,
-  spriteIndex: 5,
+  spriteIndex: 3,
   ability: Ability.NONE,
+
+  rangeX: [7500,10000],
+  rangeY: [0,5800]
 };
 
 // REGENERATE RESOURCES
@@ -164,8 +177,8 @@ export interface GameState {
 
 const makeResource = (definition: ResourceDefinition): GameObject => ({
   id: v4(),
-  x: random(0, 10000),
-  y: random(0, 5800),
+  x: random(definition.rangeX[0],definition.rangeX[1]),
+  y: random(definition.rangeY[0],definition.rangeY[1]),
   resourceType: definition.type,
   health: definition.maxHealth,
   channeling: null,
@@ -216,14 +229,17 @@ export default (): GameState => {
       state: "LOBBY",
     },
   };
-  times(10, () => makeResource(MushroomResource)).forEach(
+  times(40, () => makeResource(MushroomResource)).forEach(
     (item) => (init.objects[item.id] = item)
   );
 
-  times(10, () => makeResource(PineconeResource)).forEach(
+  times(40, () => makeResource(PineconeResource)).forEach(
     (item) => (init.objects[item.id] = item)
   );
-  times(10, () => makeResource(RoseResource)).forEach(
+  times(40, () => makeResource(RoseResource)).forEach(
+    (item) => (init.objects[item.id] = item)
+  );
+  times(40, () => makeResource(IvyResource)).forEach(
     (item) => (init.objects[item.id] = item)
   );
   return init;
