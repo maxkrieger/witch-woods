@@ -91,7 +91,11 @@ setInterval(() => {
             (rooms[id].players[playerID].inventory[
               matchingResourceIdxInInv
             ] as InventoryEntryI).quantity++;
-          } else if (rooms[id].players[playerID].inventory.length < 4) {
+          } else if (
+            rooms[id].players[playerID].inventory.filter(
+              (item) => item !== null
+            ).length < 4
+          ) {
             const firstNull = rooms[id].players[playerID].inventory.findIndex(
               (en) => en === null
             );
