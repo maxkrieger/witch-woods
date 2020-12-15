@@ -11,6 +11,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
   prevState: Player;
   team: Team;
   effect: Effect = { kind: "normal" };
+  img: Phaser.GameObjects.Image;
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -32,6 +33,11 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     this.setCollideWorldBounds(true);
     this.moving = false;
     this.facing = Facing.RIGHT;
+    this.img = new Phaser.GameObjects.Image(scene, x, y, "ice")
+      .setVisible(false)
+      .setDepth(5);
+
+    scene.add.existing(this.img);
 
     scene.anims.create({
       key: "blue_right",
@@ -132,6 +138,18 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     }
     if (!this.prevState || !isEqual(this.prevState.effect, player.effect)) {
       this.effect = player.effect;
+      if (player.effect.kind === "ice_trapped") {
+        this.setVelocity(0, 0);
+        this.anims.pause();
+        console.log("trapped");
+        this.img.setVisible(true);
+        this.img.setTexture(
+          "ice",
+          Math.floor(13 * (player.effect.remaining / 30))
+        );
+      } else {
+        this.img.setVisible(false);
+      }
     }
     this.prevState = player;
   };

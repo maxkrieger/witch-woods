@@ -135,7 +135,7 @@ export default class MainScene extends Phaser.Scene {
       this.gameObjects.sprites[playerID].destroy();
       delete this.gameObjects.sprites[playerID];
     });
-    socket.on("removePlayer", (trapID: string) => {
+    socket.on("removeTrap", (trapID: string) => {
       this.gameObjects.sprites[trapID].destroy();
       delete this.gameObjects.sprites[trapID];
     });
@@ -286,7 +286,12 @@ export default class MainScene extends Phaser.Scene {
 
   handleSpellKey = (key: number) => () => {
     const slotKey = this.inventorySprite.inventoryState[key];
-    if (slotKey !== null && slotKey.cooldown === 0) {
+    if (
+      slotKey !== null &&
+      slotKey.cooldown === 0 &&
+      (this.gameObjects.sprites[this.myID] as Witch).effect.kind !==
+        "ice_trapped"
+    ) {
       switch (resourceTypes[slotKey.resourceType].ability) {
         case Ability.NONE:
           break;
@@ -325,6 +330,9 @@ export default class MainScene extends Phaser.Scene {
 
   setPlayerY = (v: number) => () => {
     const me = this.gameObjects.sprites[this.myID] as Witch;
+    if (me.effect.kind === "ice_trapped") {
+      return;
+    }
     if (v !== 0 || (!this.cursor.down?.isDown && !this.cursor.up?.isDown)) {
       me.setVelocityY(v);
       if (v > 0) {
@@ -341,6 +349,9 @@ export default class MainScene extends Phaser.Scene {
 
   setPlayerX = (v: number) => () => {
     const me = this.gameObjects.sprites[this.myID] as Witch;
+    if (me.effect.kind === "ice_trapped") {
+      return;
+    }
     if (v !== 0 || (!this.cursor.left?.isDown && !this.cursor.right?.isDown)) {
       me.setVelocityX(v);
       if (v > 0) {

@@ -3,6 +3,7 @@ import express from "express";
 import gamestate, {
   Ability,
   abilityCooldowns,
+  EIceTrapped,
   Facing,
   GameObject,
   GameState,
@@ -42,14 +43,22 @@ setInterval(
   () =>
     Object.entries(rooms).forEach(([roomID, room]: [string, GameState]) => {
       let update = false;
-      Object.entries(room.players).forEach(([playerID, player]) =>
+      Object.entries(room.players).forEach(([playerID, player]) => {
+        if (player.effect.kind !== "normal") {
+          if (player.effect.remaining <= 0) {
+            rooms[roomID].players[playerID].effect = { kind: "normal" };
+          } else {
+            (rooms[roomID].players[playerID].effect as EIceTrapped).remaining--;
+          }
+          update = true;
+        }
         player.inventory.forEach((entry, idx) => {
           if (entry !== null && entry.cooldown !== 0) {
             rooms[roomID].players[playerID].inventory[idx]!.cooldown--;
             update = true;
           }
-        })
-      );
+        });
+      });
       if (update) {
         io.to(roomID).emit("gameState", rooms[roomID]);
       }
@@ -217,6 +226,12 @@ io.on("connection", (socket: Socket) => {
           message: `you trapped ${rooms["room1"].players[playerInit.id].name}!`,
           id: tr.madeBy,
         });
+        delete rooms["room1"].traps[trap];
+        rooms["room1"].players[playerInit.id].effect = {
+          kind: "ice_trapped",
+          remaining: 30,
+        };
+        io.to("room1").emit("gameState", rooms["room1"]);
       }
     );
     socket.on(
