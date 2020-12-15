@@ -34,6 +34,14 @@ export default class PreloadScene extends Phaser.Scene {
       frameWidth: 460,
       frameHeight: 460,
     });
+    this.load.spritesheet(
+      "eye",
+      "assets/img/spell_sheets/seeingeye_sprite.png",
+      {
+        frameWidth: 230,
+        frameHeight: 230,
+      }
+    );
 
     this.load.image("particle_blue", "assets/img/particle.png");
 

@@ -145,9 +145,12 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
         this.setVelocity(0, 0);
         this.anims.pause();
         this.img.setVisible(true);
-        this.img.setPosition(this.x, this.y);
         const frame = Math.floor(13 * (player.effect.remaining / 30));
         this.img.setTexture("ice", frame);
+      } else if (player.effect.kind === "seeing_eye") {
+        this.img.setVisible(true);
+        const frame = Math.floor(8 * (player.effect.remaining / 20));
+        this.img.setTexture("eye", frame);
       } else {
         this.img.setVisible(false);
       }
@@ -171,5 +174,10 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     this.moving = moving;
   };
 
-  update = () => {};
+  update = () => {
+    this.img.setPosition(
+      this.x,
+      this.y - (this.effect.kind === "seeing_eye" ? 150 : 0)
+    );
+  };
 }
