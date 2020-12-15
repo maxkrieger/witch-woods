@@ -19,6 +19,7 @@ import StaticResource from "../objects/staticResource";
 import RequirementHUD from "../objects/requirementHUD";
 import IceTrap from "../objects/icetrap";
 
+export const KEYS = ["Z", "X", "C", "V"];
 interface GameObjects {
   sprites: { [id: string]: Phaser.GameObjects.Sprite };
   inventory: InventoryEntry[];
@@ -94,8 +95,7 @@ export default class MainScene extends Phaser.Scene {
     this.requirementsSprite = new RequirementHUD(this);
     this.particles = this.add.particles("particle_blue");
 
-    const keys = ["Z", "X", "C", "V"];
-    const spellKeys = this.input.keyboard.addKeys(keys.join(",")) as any;
+    const spellKeys = this.input.keyboard.addKeys(KEYS.join(",")) as any;
     spellKeys.Z?.on("down", this.handleSpellKey(0));
     spellKeys.X?.on("down", this.handleSpellKey(1));
     spellKeys.C?.on("down", this.handleSpellKey(2));
@@ -248,12 +248,25 @@ export default class MainScene extends Phaser.Scene {
 
   handleSpellKey = (key: number) => () => {
     const slotKey = this.inventorySprite.inventoryState[key];
-    if (slotKey !== null) {
+    if (slotKey !== null && slotKey.cooldown === 0) {
       switch (resourceTypes[slotKey.resourceType].ability) {
         case Ability.NONE:
           break;
         case Ability.ICE_TRAP:
           break;
+        case Ability.TELEPORT:
+          const myPentagram =
+            this.myTeam === Team.RED ? this.redPentagram : this.bluePentagram;
+          this.gameObjects.sprites[this.myID].setPosition(
+            myPentagram.x,
+            myPentagram.y
+          );
+          this.socket.emit("teleport", {
+            player: this.myID,
+            slot: key,
+            x: myPentagram.x,
+            y: myPentagram.y,
+          });
         default:
           break;
       }

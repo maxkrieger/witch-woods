@@ -5,6 +5,7 @@ import {
   InventoryEntryI,
   resourceTypes,
 } from "../../gamestate";
+import { KEYS } from "../scenes/mainScene";
 
 const SIZE = 100;
 export default class Inventory extends Phaser.GameObjects.Container {
@@ -77,7 +78,7 @@ export default class Inventory extends Phaser.GameObjects.Container {
         this.scene,
         SIZE * idx,
         -15,
-        ["Z", "X", "C", "V"][idx],
+        KEYS[idx],
         {
           color: "#ffffff",
         }
@@ -113,9 +114,16 @@ export default class Inventory extends Phaser.GameObjects.Container {
         this.images[idx].setVisible(true);
         if (resourceTypes[entry.resourceType].ability !== Ability.NONE) {
           this.abilityImages[idx].setTexture(
-            `${resourceTypes[entry.resourceType].ability}_on`
+            `${resourceTypes[entry.resourceType].ability}_${
+              entry.cooldown === 0 ? "on" : "off"
+            }`
           );
           this.abilityTexts[idx].setVisible(true);
+          this.abilityTexts[idx].setText(
+            `${KEYS[idx]} ${
+              entry.cooldown !== 0 ? "(" + entry.cooldown + ")" : ""
+            }`
+          );
           this.abilityImages[idx].setVisible(true);
         } else {
           this.abilityTexts[idx].setVisible(false);

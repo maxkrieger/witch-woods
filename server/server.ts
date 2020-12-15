@@ -1,6 +1,8 @@
 import { Socket, Server } from "socket.io";
 import express from "express";
 import gamestate, {
+  Ability,
+  abilityCooldowns,
   Facing,
   GameObject,
   GameState,
@@ -34,6 +36,25 @@ console.log(`server running on 6660`);
 const rooms: { [id: string]: GameState } = {};
 
 rooms["room1"] = gamestate();
+
+setInterval(
+  () =>
+    Object.entries(rooms).forEach(([roomID, room]: [string, GameState]) => {
+      let update = false;
+      Object.entries(room.players).forEach(([playerID, player]) =>
+        player.inventory.forEach((entry, idx) => {
+          if (entry !== null && entry.cooldown !== 0) {
+            rooms[roomID].players[playerID].inventory[idx]!.cooldown--;
+            update = true;
+          }
+        })
+      );
+      if (update) {
+        io.to(roomID).emit("gameState", rooms[roomID]);
+      }
+    }),
+  1000
+);
 
 setInterval(() => {
   Object.entries(rooms).forEach(([id, room]: [string, GameState]) => {
@@ -129,6 +150,34 @@ io.on("connection", (socket: Socket) => {
         rooms["room1"].players[playerInit.id].moving = moving;
         rooms["room1"].players[playerInit.id].facing = facing;
         io.to("room1").emit("gameState", rooms["room1"]);
+      }
+    );
+    socket.on(
+      "teleport",
+      ({ x, y, slot }: { x: number; y: number; slot: number }) => {
+        const slotData = rooms["room1"].players[playerInit.id].inventory[slot];
+        if (
+          slotData !== null &&
+          slotData.cooldown === 0 &&
+          resourceTypes[slotData.resourceType].ability === Ability.TELEPORT
+        ) {
+          rooms["room1"].players[playerInit.id].inventory[slot]!.quantity--;
+          if (
+            rooms["room1"].players[playerInit.id].inventory[slot]!.quantity <= 0
+          ) {
+            rooms["room1"].players[playerInit.id].inventory[slot] = null;
+          } else {
+            rooms["room1"].players[playerInit.id].inventory[slot]!.cooldown =
+              abilityCooldowns[Ability.TELEPORT];
+          }
+          console.log("tp!");
+          io.to("room1").emit("explode", { x, y });
+          const player = rooms["room1"].players[playerInit.id];
+          rooms["room1"].players[playerInit.id].x = x;
+          rooms["room1"].players[playerInit.id].y = y;
+          io.to("room1").emit("explode", { x: player.x, y: player.y });
+          io.to("room1").emit("gameState", rooms["room1"]);
+        }
       }
     );
     socket.on("explode", ({ x, y }: { x: number; y: number }) => {
