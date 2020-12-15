@@ -16,7 +16,8 @@ export default class RequirementHUD extends Phaser.GameObjects.Container {
 
     scene.add.existing(this);
     this.setScrollFactor(0);
-    this.scene.children.bringToTop(this);
+    //this.scene.children.bringToTop(this);
+    this.setDepth(3);
   }
 
   setRequirements(requirements: ResourceRequirement[]) {
