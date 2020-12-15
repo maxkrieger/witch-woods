@@ -306,6 +306,10 @@ io.on("connection", (socket: Socket) => {
         }
       );
       if (dumped) {
+        io.to("room1").emit("tellMessage", {
+          message: `you dropped off items`,
+          id: playerInit.id,
+        });
         io.to("room1").emit("gameState", rooms["room1"]);
         const player = rooms["room1"].players[playerInit.id];
         io.to("room1").emit("explode", { x: player.x, y: player.y });
