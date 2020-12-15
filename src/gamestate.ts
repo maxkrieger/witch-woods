@@ -86,16 +86,21 @@ export enum Facing {
   DOWN = "down",
 }
 
-interface Normal {
+export interface ENormal {
   kind: "normal";
 }
 
-interface IceTrapped {
+export interface EIceTrapped {
   kind: "ice_trapped";
   remaining: number;
 }
 
-export type Effect = Normal | IceTrapped;
+export interface ESeeingEye {
+  kind: "seeing_eye";
+  remaining: number;
+}
+
+export type Effect = ENormal | EIceTrapped | ESeeingEye;
 export interface Player {
   name: string;
   id: string;

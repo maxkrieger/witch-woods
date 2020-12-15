@@ -9,6 +9,7 @@ import gamestate, {
   InventoryEntry,
   InventoryEntryI,
   makePlayer,
+  makeTrap,
   resourceTypes,
   Team,
 } from "../src/gamestate";
@@ -152,32 +153,51 @@ io.on("connection", (socket: Socket) => {
         io.to("room1").emit("gameState", rooms["room1"]);
       }
     );
+    const decrementSpell = (slot: number, ability: Ability): boolean => {
+      const slotData = rooms["room1"].players[playerInit.id].inventory[slot];
+      if (
+        slotData !== null &&
+        slotData.cooldown === 0 &&
+        resourceTypes[slotData.resourceType].ability === ability
+      ) {
+        rooms["room1"].players[playerInit.id].inventory[slot]!.quantity--;
+        if (
+          rooms["room1"].players[playerInit.id].inventory[slot]!.quantity <= 0
+        ) {
+          rooms["room1"].players[playerInit.id].inventory[slot] = null;
+        } else {
+          rooms["room1"].players[playerInit.id].inventory[slot]!.cooldown =
+            abilityCooldowns[ability];
+        }
+        return true;
+      } else {
+        return false;
+      }
+    };
     socket.on(
       "teleport",
       ({ x, y, slot }: { x: number; y: number; slot: number }) => {
-        const slotData = rooms["room1"].players[playerInit.id].inventory[slot];
-        if (
-          slotData !== null &&
-          slotData.cooldown === 0 &&
-          resourceTypes[slotData.resourceType].ability === Ability.TELEPORT
-        ) {
-          rooms["room1"].players[playerInit.id].inventory[slot]!.quantity--;
-          if (
-            rooms["room1"].players[playerInit.id].inventory[slot]!.quantity <= 0
-          ) {
-            rooms["room1"].players[playerInit.id].inventory[slot] = null;
-          } else {
-            rooms["room1"].players[playerInit.id].inventory[slot]!.cooldown =
-              abilityCooldowns[Ability.TELEPORT];
-          }
-          console.log("tp!");
-          io.to("room1").emit("explode", { x, y });
-          const player = rooms["room1"].players[playerInit.id];
-          io.to("room1").emit("explode", { x: player.x, y: player.y });
-          rooms["room1"].players[playerInit.id].x = x;
-          rooms["room1"].players[playerInit.id].y = y;
-          io.to("room1").emit("gameState", rooms["room1"]);
+        if (!decrementSpell(slot, Ability.TELEPORT)) {
+          return;
         }
+        console.log("tp!");
+        io.to("room1").emit("explode", { x, y });
+        const player = rooms["room1"].players[playerInit.id];
+        io.to("room1").emit("explode", { x: player.x, y: player.y });
+        rooms["room1"].players[playerInit.id].x = x;
+        rooms["room1"].players[playerInit.id].y = y;
+        io.to("room1").emit("gameState", rooms["room1"]);
+      }
+    );
+    socket.on(
+      "placeTrap",
+      ({ x, y, slot }: { x: number; y: number; slot: number }) => {
+        if (!decrementSpell(slot, Ability.ICE_TRAP)) {
+          return;
+        }
+        const trap = makeTrap(x, y, playerInit.team);
+        rooms["room1"].traps[trap.id] = trap;
+        io.to("room1").emit("gameState", rooms["room1"]);
       }
     );
     socket.on("explode", ({ x, y }: { x: number; y: number }) => {

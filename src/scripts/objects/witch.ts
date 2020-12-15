@@ -1,6 +1,6 @@
 import { isEqual } from "lodash";
 import { BlendModes, Geom } from "phaser";
-import { Facing, Player, Team } from "../../gamestate";
+import { Effect, Facing, Player, Team } from "../../gamestate";
 
 export default class Witch extends Phaser.Physics.Arcade.Sprite {
   isMe: boolean;
@@ -10,6 +10,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
   moving: boolean;
   prevState: Player;
   team: Team;
+  effect: Effect = { kind: "normal" };
   constructor(
     scene: Phaser.Scene,
     x: number,
@@ -113,7 +114,6 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     if (isEqual(this.prevState, player)) {
       return;
     }
-    this.prevState = player;
     if (!this.isMe) {
       this.setMoving(player.moving);
       this.setFacing(player.facing);
@@ -130,6 +130,10 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
         });
       }
     }
+    if (!this.prevState || !isEqual(this.prevState.effect, player.effect)) {
+      this.effect = player.effect;
+    }
+    this.prevState = player;
   };
   setFacing = (facing: Facing) => {
     if (this.moving && facing != this.facing) {

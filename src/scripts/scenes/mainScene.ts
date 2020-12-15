@@ -41,7 +41,7 @@ export default class MainScene extends Phaser.Scene {
   debugText: Phaser.GameObjects.Text;
   infoText: Phaser.GameObjects.Text;
   nearTrap: string | null = null;
-  placingTrap = false;
+  placingTrapSlot = -1;
   constructor() {
     super({ key: "MainScene" });
     this.gameObjects = {
@@ -101,6 +101,8 @@ export default class MainScene extends Phaser.Scene {
     spellKeys.C?.on("down", this.handleSpellKey(2));
     spellKeys.V?.on("down", this.handleSpellKey(3));
 
+    this.input.on("pointerdown", this.handleClick);
+
     // this.lights.enable().setAmbientColor(0x555555);
 
     const socket = io(
@@ -159,7 +161,8 @@ export default class MainScene extends Phaser.Scene {
             this,
             trap.x,
             trap.y,
-            trap.team
+            trap.team,
+            trap.id
           );
           if (trap.team !== state.players[this.myID].team) {
             this.gameObjects.sprites[trap.id].setVisible(false);
@@ -215,9 +218,9 @@ export default class MainScene extends Phaser.Scene {
       color: "#FFFFFF",
     })
       .setOrigin(0)
-      .setScrollFactor(0);
+      .setScrollFactor(0)
+      .setDepth(100);
     this.add.existing(this.debugText);
-    this.children.bringToTop(this.debugText);
     if (process.env.NODE_ENV !== "development") {
       this.debugText.setVisible(false);
     }
@@ -230,21 +233,39 @@ export default class MainScene extends Phaser.Scene {
       {
         color: "#FFFFFF",
         fontSize: "50px",
+        align: "center",
       }
-    ).setScrollFactor(0);
+    )
+      .setScrollFactor(0)
+      .setOrigin(0.5)
+      .setDepth(100);
     this.add.existing(this.infoText);
-    this.children.bringToTop(this.infoText);
   }
+  handleClick = (pointer: any) => {
+    const { worldX, worldY } = pointer;
+    if (this.placingTrapSlot > -1) {
+      this.infoText.setText("");
+      this.socket.emit("placeTrap", {
+        player: this.myID,
+        x: worldX,
+        y: worldY,
+        slot: this.placingTrapSlot,
+      });
+      this.placingTrapSlot = -1;
+    }
+  };
 
   displayInfoMessage = (message: string, time?: number) => {
     this.infoText.setText(message);
-    this.time.addEvent({
-      delay: time,
-      callback: () => {
-        this.infoText.setText("");
-      },
-      callbackScope: this,
-    });
+    if (time) {
+      this.time.addEvent({
+        delay: time,
+        callback: () => {
+          this.infoText.setText("");
+        },
+        callbackScope: this,
+      });
+    }
   };
 
   handleSpellKey = (key: number) => () => {
@@ -254,6 +275,10 @@ export default class MainScene extends Phaser.Scene {
         case Ability.NONE:
           break;
         case Ability.ICE_TRAP:
+          if (this.placingTrapSlot < 0) {
+            this.placingTrapSlot = key;
+            this.displayInfoMessage("Click to place a trap");
+          }
           break;
         case Ability.TELEPORT:
           const myPentagram =
