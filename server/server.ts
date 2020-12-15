@@ -189,7 +189,6 @@ io.on("connection", (socket: Socket) => {
         if (!decrementSpell(slot, Ability.TELEPORT)) {
           return;
         }
-        console.log("tp!");
         io.to("room1").emit("explode", { x, y });
         const player = rooms["room1"].players[playerInit.id];
         io.to("room1").emit("explode", { x: player.x, y: player.y });
@@ -209,6 +208,16 @@ io.on("connection", (socket: Socket) => {
         io.to("room1").emit("gameState", rooms["room1"]);
       }
     );
+    socket.on("seeingEye", ({ slot }: { slot: number }) => {
+      if (!decrementSpell(slot, Ability.SEEING_EYE)) {
+        return;
+      }
+      rooms["room1"].players[playerInit.id].effect = {
+        kind: "seeing_eye",
+        remaining: 20,
+      };
+      io.to("room1").emit("gameState", rooms["room1"]);
+    });
     socket.on("explode", ({ x, y }: { x: number; y: number }) => {
       io.to("room1").emit("explode", { x, y });
     });
@@ -219,7 +228,11 @@ io.on("connection", (socket: Socket) => {
         io.to("room1").emit("explode", { x: tr.x, y: tr.y });
         io.to("room1").emit("removeTrap", trap);
         io.to("room1").emit("tellMessage", {
-          message: `${rooms["room1"].players[tr.madeBy].name} trapped you!`,
+          message: `${
+            rooms["room1"].players[tr.madeBy]
+              ? rooms["room1"].players[tr.madeBy].name
+              : "another player"
+          } trapped you!`,
           id: playerInit.id,
         });
         io.to("room1").emit("tellMessage", {
