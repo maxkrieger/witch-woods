@@ -73,7 +73,10 @@ setInterval(() => {
               });
             }
           } else {
-            // inventory full!
+            io.to(id).emit("tellMessage", {
+              message: "inventory is full!",
+              id: playerID,
+            });
             return;
           }
           delete rooms[id].objects[resource.id];
@@ -97,9 +100,6 @@ const balancedNextTeam = (roomid: string) => {
   );
   return reds.length > blues.length ? Team.BLUE : Team.RED;
 };
-
-// TODO: prop hunt mode
-// fake plant explody
 
 io.on("connection", (socket: Socket) => {
   socket.on("join", ({ name }: { name: string }) => {

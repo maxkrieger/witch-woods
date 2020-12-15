@@ -141,9 +141,14 @@ export default class MainScene extends Phaser.Scene {
     socket.on("explode", ({ x, y }: { x: number; y: number }) => {
       this.particleEmit(x, y);
     });
-    socket.on("tellMessage", ({ message }: { message: string }) => {
-      this.displayInfoMessage(message, 2000);
-    });
+    socket.on(
+      "tellMessage",
+      ({ message, id }: { message: string; id: string }) => {
+        if (id === "" || this.myID === id) {
+          this.displayInfoMessage(message, 2000);
+        }
+      }
+    );
     socket.on("gameState", (state: GameState) => {
       this.requirementsSprite.setRequirements(
         state.status[state.players[this.myID].team]
@@ -345,7 +350,7 @@ export default class MainScene extends Phaser.Scene {
         team,
       }))
       .sort((a, b) => a.dist - b.dist);
-    const resourcesInRange = inRange.filter(({ isTrap }) => isTrap);
+    const resourcesInRange = inRange.filter(({ isResource }) => isResource);
     if (resourcesInRange.length > 0) {
       this.setFocusedResource(
         resourcesInRange[0].dist <= 200 ? resourcesInRange[0].id : null
