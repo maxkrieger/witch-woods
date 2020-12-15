@@ -12,6 +12,8 @@ export default class IceTrap extends Phaser.GameObjects.Sprite {
     id: string
   ) {
     super(scene, x, y, "ice_trap");
+    this.setDisplaySize(175, 155);
+    scene.add.existing(this);
     this.team = team;
     this.id = id;
   }

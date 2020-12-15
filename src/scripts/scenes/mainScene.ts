@@ -244,14 +244,26 @@ export default class MainScene extends Phaser.Scene {
   handleClick = (pointer: any) => {
     const { worldX, worldY } = pointer;
     if (this.placingTrapSlot > -1) {
-      this.infoText.setText("");
-      this.socket.emit("placeTrap", {
-        player: this.myID,
-        x: worldX,
-        y: worldY,
-        slot: this.placingTrapSlot,
-      });
-      this.placingTrapSlot = -1;
+      const enemyPentagram =
+        this.myTeam === Team.RED ? this.bluePentagram : this.redPentagram;
+      const dist = Phaser.Math.Distance.Between(
+        enemyPentagram.x,
+        enemyPentagram.y,
+        worldX,
+        worldY
+      );
+      if (dist >= 400) {
+        this.displayInfoMessage("");
+        this.socket.emit("placeTrap", {
+          player: this.myID,
+          x: worldX,
+          y: worldY,
+          slot: this.placingTrapSlot,
+        });
+        this.placingTrapSlot = -1;
+      } else {
+        this.displayInfoMessage("trap too close to enemy base!", 4000);
+      }
     }
   };
 
@@ -403,15 +415,13 @@ export default class MainScene extends Phaser.Scene {
     if (
       trapsInRange.length > 0 &&
       trapsInRange[0].dist <= 100 &&
-      !this.nearTrap
+      this.nearTrap !== trapsInRange[0].id
     ) {
       this.nearTrap = trapsInRange[0].id;
       this.socket.emit("activateTrap", {
         player: this.myID,
         trap: trapsInRange[0].id,
       });
-    } else {
-      this.nearTrap = null;
     }
     const myPentagram =
       this.myTeam === Team.RED ? this.redPentagram : this.bluePentagram;
