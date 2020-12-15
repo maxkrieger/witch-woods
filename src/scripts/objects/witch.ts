@@ -121,9 +121,9 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     if (isEqual(this.prevState, player)) {
       return;
     }
-    this.setMoving(player.moving);
-    this.setFacing(player.facing);
     if (!this.isMe) {
+      this.setMoving(player.moving);
+      this.setFacing(player.facing);
       if ((player.x !== this.x || player.y !== this.y) && !this.currentTween) {
         this.currentTween = this.scene.add.tween({
           targets: this,
