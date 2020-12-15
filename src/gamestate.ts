@@ -27,8 +27,8 @@ export interface ResourceDefinition {
   maxHealth: number;
   spriteIndex: number;
   ability: Ability;
-  rangeX: [number,number];
-  rangeY: [number,number];
+  rangeX: [number, number];
+  rangeY: [number, number];
 }
 
 export const MushroomResource: ResourceDefinition = {
@@ -36,8 +36,8 @@ export const MushroomResource: ResourceDefinition = {
   maxHealth: 5,
   spriteIndex: 0,
   ability: Ability.TELEPORT,
-  rangeX: [0,2500],
-  rangeY: [0,5800]
+  rangeX: [0, 2500],
+  rangeY: [0, 5800],
 };
 
 export const PineconeResource: ResourceDefinition = {
@@ -46,8 +46,8 @@ export const PineconeResource: ResourceDefinition = {
   spriteIndex: 4,
   ability: Ability.ICE_TRAP,
 
-  rangeX: [2500,5000],
-  rangeY: [0,5800]
+  rangeX: [2500, 5000],
+  rangeY: [0, 5800],
 };
 
 export const RoseResource: ResourceDefinition = {
@@ -56,8 +56,8 @@ export const RoseResource: ResourceDefinition = {
   spriteIndex: 7,
   ability: Ability.SEEING_EYE,
 
-  rangeX: [5000,7500],
-  rangeY: [0,5800]
+  rangeX: [5000, 7500],
+  rangeY: [0, 5800],
 };
 
 export const IvyResource: ResourceDefinition = {
@@ -66,8 +66,8 @@ export const IvyResource: ResourceDefinition = {
   spriteIndex: 3,
   ability: Ability.NONE,
 
-  rangeX: [7500,10000],
-  rangeY: [0,5800]
+  rangeX: [7500, 10000],
+  rangeY: [0, 5800],
 };
 
 // REGENERATE RESOURCES
@@ -177,8 +177,8 @@ export interface GameState {
 
 const makeResource = (definition: ResourceDefinition): GameObject => ({
   id: v4(),
-  x: random(definition.rangeX[0],definition.rangeX[1]),
-  y: random(definition.rangeY[0],definition.rangeY[1]),
+  x: random(definition.rangeX[0], definition.rangeX[1]),
+  y: random(definition.rangeY[0], definition.rangeY[1]),
   resourceType: definition.type,
   health: definition.maxHealth,
   channeling: null,
@@ -199,11 +199,7 @@ export const makePlayer = (name: string, team: Team): Player => {
     x: random(x - 50, x + 50),
     y: random(y - 50, y + 50),
     team,
-    inventory: [
-      { resourceType: ResourceType.MUSHROOM, quantity: 10, cooldown: 0 },
-      { resourceType: ResourceType.PINECONE, quantity: 10, cooldown: 0 },
-      { resourceType: ResourceType.ROSE, quantity: 10, cooldown: 0 },
-    ],
+    inventory: [],
     moving: false,
     facing: Facing.DOWN,
     effect: { kind: "normal" },
