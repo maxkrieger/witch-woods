@@ -53,7 +53,7 @@ setInterval(
         io.to(roomID).emit("gameState", rooms[roomID]);
       }
     }),
-  1000
+  1100
 );
 
 setInterval(() => {
@@ -112,7 +112,7 @@ setInterval(() => {
       }
     });
   });
-}, 250);
+}, 240);
 
 const balancedNextTeam = (roomid: string) => {
   const [reds, blues] = partition(
