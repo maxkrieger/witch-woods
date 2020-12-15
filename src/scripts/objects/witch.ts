@@ -141,12 +141,10 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
       if (player.effect.kind === "ice_trapped") {
         this.setVelocity(0, 0);
         this.anims.pause();
-        console.log("trapped");
         this.img.setVisible(true);
-        this.img.setTexture(
-          "ice",
-          Math.floor(13 * (player.effect.remaining / 30))
-        );
+        this.img.setPosition(this.x, this.y);
+        const frame = Math.floor(13 * (player.effect.remaining / 30));
+        this.img.setTexture("ice", frame);
       } else {
         this.img.setVisible(false);
       }
