@@ -75,6 +75,11 @@ setInterval(() => {
           io.to(id).emit("gameState", rooms[id]);
         } else {
           const playerID = rooms[id].objects[resource.id].channeling as string;
+          if (!(playerID in rooms[id].players)) {
+            rooms[id].objects[resource.id].channeling = null;
+            io.to(id).emit("gameState", rooms[id]);
+            return;
+          }
           const matchingResourceIdxInInv = rooms[id].players[
             playerID
           ].inventory.findIndex(
