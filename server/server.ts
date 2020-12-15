@@ -195,7 +195,7 @@ io.on("connection", (socket: Socket) => {
         if (!decrementSpell(slot, Ability.ICE_TRAP)) {
           return;
         }
-        const trap = makeTrap(x, y, playerInit.team);
+        const trap = makeTrap(x, y, playerInit.team, playerInit.id);
         rooms["room1"].traps[trap.id] = trap;
         io.to("room1").emit("gameState", rooms["room1"]);
       }
@@ -206,7 +206,17 @@ io.on("connection", (socket: Socket) => {
     socket.on(
       "activateTrap",
       ({ player, trap }: { player: string; trap: string }) => {
-        console.log("TRAP", player, trap);
+        const tr = rooms["room1"].traps[trap];
+        io.to("room1").emit("explode", { x: tr.x, y: tr.y });
+        io.to("room1").emit("removeTrap", trap);
+        io.to("room1").emit("tellMessage", {
+          message: `${rooms["room1"].players[tr.madeBy].name} trapped you!`,
+          id: playerInit.id,
+        });
+        io.to("room1").emit("tellMessage", {
+          message: `you trapped ${rooms["room1"].players[playerInit.id].name}!`,
+          id: tr.madeBy,
+        });
       }
     );
     socket.on(

@@ -135,6 +135,10 @@ export default class MainScene extends Phaser.Scene {
       this.gameObjects.sprites[playerID].destroy();
       delete this.gameObjects.sprites[playerID];
     });
+    socket.on("removePlayer", (trapID: string) => {
+      this.gameObjects.sprites[trapID].destroy();
+      delete this.gameObjects.sprites[trapID];
+    });
     socket.on("removeResource", (resourceID: string) => {
       (this.gameObjects.sprites[resourceID] as Resource).healthBar.clear();
       this.gameObjects.sprites[resourceID].destroy();
@@ -414,7 +418,7 @@ export default class MainScene extends Phaser.Scene {
     );
     if (
       trapsInRange.length > 0 &&
-      trapsInRange[0].dist <= 100 &&
+      trapsInRange[0].dist <= 150 &&
       this.nearTrap !== trapsInRange[0].id
     ) {
       this.nearTrap = trapsInRange[0].id;

@@ -133,13 +133,20 @@ export interface Trap {
   y: number;
   team: Team;
   id: string;
+  madeBy: string;
 }
 
-export const makeTrap = (x: number, y: number, team: Team): Trap => ({
+export const makeTrap = (
+  x: number,
+  y: number,
+  team: Team,
+  madeBy: string
+): Trap => ({
   x,
   y,
   team,
   id: v4(),
+  madeBy,
 });
 
 export interface Status {
