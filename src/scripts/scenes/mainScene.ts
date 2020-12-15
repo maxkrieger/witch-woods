@@ -504,7 +504,6 @@ export default class MainScene extends Phaser.Scene {
     } else {
       this.setPentagramInRange(false);
     }
-    this.children.bringToTop(this.inventorySprite);
   }
   setPentagramInRange = (inRange: boolean) => {
     if (inRange !== this.pentagramInRange) {

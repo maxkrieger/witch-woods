@@ -21,6 +21,7 @@ export default class Inventory extends Phaser.GameObjects.Container {
       scene.cameras.main.centerX - SIZE * 2,
       scene.cameras.main.y + scene.cameras.main.height - SIZE
     );
+    this.setDepth(6);
     this.grid = new Phaser.GameObjects.Grid(
       scene,
       0,
@@ -129,8 +130,6 @@ export default class Inventory extends Phaser.GameObjects.Container {
           this.abilityTexts[idx].setVisible(false);
           this.abilityImages[idx].setVisible(false);
         }
-        this.scene.children.bringToTop(this.images[idx]);
-        this.scene.children.bringToTop(this.texts[idx]);
       });
     }
   }
