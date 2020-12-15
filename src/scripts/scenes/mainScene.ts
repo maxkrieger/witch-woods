@@ -18,6 +18,7 @@ import Inventory from "../objects/inventory";
 import StaticResource from "../objects/staticResource";
 import RequirementHUD from "../objects/requirementHUD";
 import IceTrap from "../objects/icetrap";
+import { UP } from "phaser";
 
 export const KEYS = ["Z", "X", "C", "V"];
 interface GameObjects {
@@ -320,6 +321,7 @@ export default class MainScene extends Phaser.Scene {
     const slotKey = this.inventorySprite.inventoryState[key];
     if (
       slotKey !== null &&
+      slotKey !== undefined &&
       slotKey.cooldown === 0 &&
       (this.gameObjects.sprites[this.myID] as Witch).effect.kind !==
         "ice_trapped"
@@ -372,18 +374,18 @@ export default class MainScene extends Phaser.Scene {
     if (v !== 0 || (!this.cursor.down?.isDown && !this.cursor.up?.isDown)) {
       me.setVelocityY(v);
       if (v > 0) {
-        me.moving = true;
-        me.facing = Facing.DOWN;
+        me.setMoving(true);
+        me.setFacing(Facing.DOWN);
       } else if (v < 0) {
-        me.moving = true;
-        me.facing = Facing.UP;
+        me.setMoving(true);
+        me.setFacing(Facing.UP);
       } else if (v === 0) {
         if (this.cursor.left?.isDown) {
-          me.facing = Facing.LEFT;
+          me.setFacing(Facing.LEFT);
         } else if (this.cursor.right?.isDown) {
-          me.facing = Facing.RIGHT;
+          me.setFacing(Facing.RIGHT);
         } else {
-          me.moving = false;
+          me.setMoving(false);
         }
       }
     }
@@ -397,18 +399,18 @@ export default class MainScene extends Phaser.Scene {
     if (v !== 0 || (!this.cursor.left?.isDown && !this.cursor.right?.isDown)) {
       me.setVelocityX(v);
       if (v > 0) {
-        me.moving = true;
-        me.facing = Facing.RIGHT;
+        me.setMoving(true);
+        me.setFacing(Facing.RIGHT);
       } else if (v < 0) {
-        me.moving = true;
-        me.facing = Facing.LEFT;
+        me.setMoving(true);
+        me.setFacing(Facing.LEFT);
       } else if (v === 0) {
         if (this.cursor.down?.isDown) {
-          me.facing = Facing.DOWN;
+          me.setFacing(Facing.DOWN);
         } else if (this.cursor.up?.isDown) {
-          me.facing = Facing.UP;
+          me.setFacing(Facing.UP);
         } else {
-          me.moving = false;
+          me.setMoving(false);
         }
       }
     }

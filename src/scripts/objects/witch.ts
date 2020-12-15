@@ -8,8 +8,6 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
   currentTween?: Phaser.Tweens.Tween;
   facing: Facing;
   moving: boolean;
-  curFacing: Facing = Facing.DOWN;
-  curMoving: boolean = false;
   prevState: Player;
 
   team: Team;
@@ -158,19 +156,17 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     this.prevState = player;
   };
   setFacing = (facing: Facing) => {
-    if (this.moving && facing != this.curFacing) {
+    if (this.moving && facing !== this.facing) {
       this.anims.play(`${this.team}_${facing}`, true);
     }
-    this.curFacing = facing;
     this.facing = facing;
   };
   setMoving = (moving: boolean) => {
-    if (!moving && this.curMoving) {
+    if (!moving && this.moving) {
       this.anims.pause();
-    } else if (moving && !this.curMoving) {
+    } else if (moving && !this.moving) {
       this.anims.resume();
     }
-    this.curMoving = moving;
     this.moving = moving;
   };
 
