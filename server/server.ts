@@ -173,9 +173,9 @@ io.on("connection", (socket: Socket) => {
           console.log("tp!");
           io.to("room1").emit("explode", { x, y });
           const player = rooms["room1"].players[playerInit.id];
+          io.to("room1").emit("explode", { x: player.x, y: player.y });
           rooms["room1"].players[playerInit.id].x = x;
           rooms["room1"].players[playerInit.id].y = y;
-          io.to("room1").emit("explode", { x: player.x, y: player.y });
           io.to("room1").emit("gameState", rooms["room1"]);
         }
       }
