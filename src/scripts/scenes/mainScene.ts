@@ -187,7 +187,7 @@ export default class MainScene extends Phaser.Scene {
             player.id,
             player.id === this.myID,
             player.team
-          );
+          ).setDepth(1);
           if (player.id === this.myID) {
             this.cameras.main.startFollow(
               this.gameObjects.sprites[this.myID],
@@ -209,6 +209,7 @@ export default class MainScene extends Phaser.Scene {
 
     var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
     var layer = map.createStaticLayer("Trees", tilesetTrees);
+    layer.setDepth(2);
 
     this.debugText = new Phaser.GameObjects.Text(this, 10, 10, `connecting`, {
       color: "#FFFFFF",
