@@ -4,8 +4,8 @@
     ],
     "fileStates": {
         "": {
-            "scaleInDock": 0.1601,
-            "scaleInEditor": 0.2252
+            "scaleInDock": 0.03,
+            "scaleInEditor": 0.0508
         },
         "../bgFull.tsx": {
             "scaleInDock": 0.0625,
@@ -55,7 +55,7 @@
     ],
     "tileset.embedInMap": true,
     "tileset.tileSize": {
-        "height": 1000,
-        "width": 1000
+        "height": 100,
+        "width": 100
     }
 }
