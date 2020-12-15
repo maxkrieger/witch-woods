@@ -28,7 +28,8 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image("seeingeye_on", "assets/img/spell_icons/seeingeye_on.png");
     this.load.image("teleport_off", "assets/img/spell_icons/teleport_off.png");
     this.load.image("teleport_on", "assets/img/spell_icons/teleport_on.png");
-    this.load.image("ice_trap", "assets/img/icetrap_outline.png");
+    this.load.image("ice_trap_red", "assets/img/icetrap_red.png");
+    this.load.image("ice_trap_blue", "assets/img/icetrap_blue.png");
     this.load.spritesheet("ice", "assets/img/spell_sheets/icetrap_sprite.png", {
       frameWidth: 460,
       frameHeight: 460,

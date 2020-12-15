@@ -168,7 +168,12 @@ export default class MainScene extends Phaser.Scene {
             trap.team,
             trap.id
           );
-          if (trap.team !== state.players[this.myID].team) {
+
+          const me = this.gameObjects.sprites[this.myID] as Witch;
+          if (
+            trap.team !== this.myTeam &&
+            (!me || me.effect.kind !== "seeing_eye")
+          ) {
             this.gameObjects.sprites[trap.id].setVisible(false);
           }
         }
@@ -216,6 +221,7 @@ export default class MainScene extends Phaser.Scene {
               ([id, spr]: [string, any]) => {
                 if (spr.isTrap && spr.team !== this.myTeam) {
                   spr.setVisible(true);
+                  this.particleEmit(spr.x, spr.y);
                 }
               }
             );
@@ -365,13 +371,19 @@ export default class MainScene extends Phaser.Scene {
     if (v !== 0 || (!this.cursor.down?.isDown && !this.cursor.up?.isDown)) {
       me.setVelocityY(v);
       if (v > 0) {
-        me.setMoving(true);
-        me.setFacing(Facing.DOWN);
+        me.moving = true;
+        me.facing = Facing.DOWN;
       } else if (v < 0) {
-        me.setMoving(true);
-        me.setFacing(Facing.UP);
-      } else if (v === 0 && this.cursor.left?.isUp && this.cursor.right?.isUp) {
-        me.setMoving(false);
+        me.moving = true;
+        me.facing = Facing.UP;
+      } else if (v === 0) {
+        if (this.cursor.left?.isDown) {
+          me.facing = Facing.LEFT;
+        } else if (this.cursor.right?.isDown) {
+          me.facing = Facing.RIGHT;
+        } else {
+          me.moving = false;
+        }
       }
     }
   };
@@ -384,13 +396,19 @@ export default class MainScene extends Phaser.Scene {
     if (v !== 0 || (!this.cursor.left?.isDown && !this.cursor.right?.isDown)) {
       me.setVelocityX(v);
       if (v > 0) {
-        me.setMoving(true);
-        me.setFacing(Facing.RIGHT);
+        me.moving = true;
+        me.facing = Facing.RIGHT;
       } else if (v < 0) {
-        me.setMoving(true);
-        me.setFacing(Facing.LEFT);
-      } else if (v === 0 && this.cursor.down?.isUp && this.cursor.up?.isUp) {
-        me.setMoving(false);
+        me.moving = true;
+        me.facing = Facing.LEFT;
+      } else if (v === 0) {
+        if (this.cursor.down?.isDown) {
+          me.facing = Facing.DOWN;
+        } else if (this.cursor.up?.isDown) {
+          me.facing = Facing.UP;
+        } else {
+          me.moving = false;
+        }
       }
     }
   };

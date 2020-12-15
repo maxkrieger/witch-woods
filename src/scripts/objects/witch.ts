@@ -8,7 +8,10 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
   currentTween?: Phaser.Tweens.Tween;
   facing: Facing;
   moving: boolean;
+  curFacing: Facing = Facing.DOWN;
+  curMoving: boolean = false;
   prevState: Player;
+
   team: Team;
   effect: Effect = { kind: "normal" };
   img: Phaser.GameObjects.Image;
@@ -120,9 +123,9 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     if (isEqual(this.prevState, player)) {
       return;
     }
+    this.setMoving(player.moving);
+    this.setFacing(player.facing);
     if (!this.isMe) {
-      this.setMoving(player.moving);
-      this.setFacing(player.facing);
       if ((player.x !== this.x || player.y !== this.y) && !this.currentTween) {
         this.currentTween = this.scene.add.tween({
           targets: this,
@@ -152,17 +155,19 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     this.prevState = player;
   };
   setFacing = (facing: Facing) => {
-    if (this.moving && facing != this.facing) {
+    if (this.moving && facing != this.curFacing) {
       this.anims.play(`${this.team}_${facing}`, true);
     }
+    this.curFacing = facing;
     this.facing = facing;
   };
   setMoving = (moving: boolean) => {
-    if (!moving && this.moving) {
+    if (!moving && this.curMoving) {
       this.anims.pause();
-    } else if (moving && !this.moving) {
+    } else if (moving && !this.curMoving) {
       this.anims.resume();
     }
+    this.curMoving = moving;
     this.moving = moving;
   };
 
