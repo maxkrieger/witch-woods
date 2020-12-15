@@ -108,7 +108,8 @@ export default class MainScene extends Phaser.Scene {
     const socket = io(
       process.env.NODE_ENV === "production"
         ? "wss://witch-woods.maxkrieger.repl.co"
-        : "ws://localhost:6660"
+        : // : "wss://witch-woods.maxkrieger.repl.co"
+          "ws://localhost:6660"
     );
     this.socket = socket;
     socket.on("connect", () => {
@@ -440,6 +441,9 @@ export default class MainScene extends Phaser.Scene {
       return;
     }
     const myPlayer = this.gameObjects.sprites[this.myID];
+    if (!myPlayer) {
+      return;
+    }
     this.debugText.setText(
       `DEBUG: ${Math.floor(this.game.loop.actualFps)}fps, x: ${myPlayer.x} y: ${
         myPlayer.y
