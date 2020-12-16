@@ -1,9 +1,4 @@
-import {
-  GameObject,
-  MushroomResource,
-  ResourceType,
-  resourceTypes,
-} from "../../gamestate";
+import { GameObject, resourceTypes } from "../../gamestate";
 import Resource from "./Resource";
 
 export default class StaticResource extends Resource {
