@@ -144,6 +144,8 @@ try {
                 message: "inventory is full!",
                 id: playerID,
               });
+              rooms["room1"].objects[resource.id].channeling = null;
+              io.to(id).emit("gameState", rooms[id]);
               return;
             }
             delete rooms[id].objects[resource.id];
