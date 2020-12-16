@@ -170,6 +170,7 @@ const AUTOLOSE = false;
 
 io.on("connection", (socket: Socket) => {
   socket.on("join", ({ name }: { name: string }) => {
+    console.log("JOINED:", name);
     const playerInit = makePlayer(name, balancedNextTeam("room1"));
     rooms["room1"].players[playerInit.id] = playerInit;
     socket.join("room1");
@@ -395,6 +396,7 @@ io.on("connection", (socket: Socket) => {
     socket.on("disconnect", () => {
       delete rooms["room1"].players[playerInit.id];
       io.to("room1").emit("removePlayer", playerInit.id);
+      console.log("LEFT:", name);
     });
   });
 });

@@ -53,7 +53,13 @@ export default class LobbyScene extends Phaser.Scene {
       this.cameras.main.width / 2,
       this.cameras.main.height / 2
     );
+    const btn = document.createElement("button");
+    btn.innerHTML = "tutorial";
+    btn.onclick = () => {
+      this.scene.start("TutorialScene");
+    };
     const el = this.add.dom(0, 0, form);
-    container.add(el);
+    const el1 = this.add.dom(0, 100, btn);
+    container.add([el, el1]);
   }
 }
