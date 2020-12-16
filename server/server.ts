@@ -61,7 +61,7 @@ setInterval(
       });
       io.to(roomID).emit("gameState", rooms[roomID]);
     }),
-  20700
+  50700
 );
 
 setInterval(
@@ -171,6 +171,9 @@ const AUTOLOSE = false;
 io.on("connection", (socket: Socket) => {
   socket.on("join", ({ name }: { name: string }) => {
     console.log("JOINED:", name);
+    if (Object.keys(rooms["room1"].players).length === 0) {
+      rooms["room1"] = gamestate();
+    }
     const playerInit = makePlayer(name, balancedNextTeam("room1"));
     rooms["room1"].players[playerInit.id] = playerInit;
     socket.join("room1");
