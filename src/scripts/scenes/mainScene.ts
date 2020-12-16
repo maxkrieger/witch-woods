@@ -283,6 +283,11 @@ export default class MainScene extends Phaser.Scene {
     spellKeys.X?.on("down", this.handleSpellKey(1));
     spellKeys.C?.on("down", this.handleSpellKey(2));
     spellKeys.V?.on("down", this.handleSpellKey(3));
+    if (process.env.NODE_ENV === "development") {
+      this.input.keyboard.addKey("O").on("down", () => {
+        this.cameras.main.zoomTo(0.1, 500);
+      });
+    }
 
     this.input.on("pointerdown", this.handleClick);
 
