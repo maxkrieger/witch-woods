@@ -47,11 +47,11 @@ setInterval(
   () =>
     Object.entries(rooms).forEach(([roomID, room]: [string, GameState]) => {
       const concated = room.status.blue.concat(room.status.red);
-      const reqs = sampleSize(concated, Math.floor(concated.length / 2));
+      const reqs = sampleSize(concated, concated.length);
       const places = sampleSize(RANGES, reqs.length);
       reqs.forEach(({ resourceType }, idx) => {
         times(
-          random(3, Math.ceil(10 / resourceTypes[resourceType].maxHealth)),
+          random(5, Math.ceil(15 / resourceTypes[resourceType].maxHealth)),
           () => {
             const item = makeResource(
               resourceTypes[resourceType],

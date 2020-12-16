@@ -307,9 +307,9 @@ export default (): GameState => {
       winner: "NONE",
     },
   };
-  const redPlaces = sampleSize(RANGES, redReqs.length);
+  const places = sampleSize(RANGES, redReqs.length + blueReqs.length);
   redReqs.forEach((r, idx) => {
-    const place = redPlaces[idx];
+    const place = places[idx];
     times(Math.ceil(25 / resourceTypes[r.resourceType].maxHealth), () => {
       const item = makeResource(
         resourceTypes[r.resourceType],
@@ -319,10 +319,9 @@ export default (): GameState => {
       init.objects[item.id] = item;
     });
   });
-  const bluePlaces = sampleSize(RANGES, blueReqs.length);
   blueReqs.forEach((r, idx) => {
-    const place = bluePlaces[idx];
-    times(Math.ceil(15 / resourceTypes[r.resourceType].maxHealth), () => {
+    const place = places[idx + redReqs.length - 1];
+    times(Math.ceil(20 / resourceTypes[r.resourceType].maxHealth), () => {
       const item = makeResource(
         resourceTypes[r.resourceType],
         place.rangeX,
