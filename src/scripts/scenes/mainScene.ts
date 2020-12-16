@@ -344,11 +344,13 @@ export default class MainScene extends Phaser.Scene {
     this.allyBar = this.add
       .rectangle(0, 0, 0, 20, 0xffffff, 0.8)
       .setOrigin(0)
-      .setScrollFactor(0);
+      .setScrollFactor(0)
+      .setDepth(50);
     this.enemyBar = this.add
       .rectangle(0, 0, 0, 20, 0xffffff, 0.8)
       .setOrigin(0)
-      .setScrollFactor(0);
+      .setScrollFactor(0)
+      .setDepth(50);
     this.connect();
   }
 
