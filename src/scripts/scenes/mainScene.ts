@@ -253,8 +253,8 @@ export default class MainScene extends Phaser.Scene {
     layer.setDepth(2);
 
     this.layerCol = map.createStaticLayer("Collides", tilesetGround);
-    this.layerCol.setVisible(false);
-    this.layerCol.setCollision(5);
+    //this.layerCol.setVisible(false);
+    this.layerCol.setCollision(13);
     //layer.scale = 4;
 
     this.cursor = this.input.keyboard.createCursorKeys();

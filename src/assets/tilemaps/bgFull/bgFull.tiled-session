@@ -1,11 +1,12 @@
 {
-    "activeFile": "",
+    "activeFile": "bgFull.json",
     "expandedProjectPaths": [
     ],
+    "exportAsImage.useCurrentScale": false,
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
         "": {
-            "scaleInDock": 0.03,
+            "scaleInDock": 0.1633,
             "scaleInEditor": 0.0508
         },
         "../bgFull.tsx": {
@@ -21,18 +22,18 @@
             }
         },
         "bgFull.json": {
-            "scale": 0.2142,
-            "selectedLayer": 3,
+            "scale": 0.2084,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 6755.368814192344,
-                "y": 2742.7637721755373
+                "x": 5059.980806142034,
+                "y": 2905.4702495201536
             }
         },
         "bgFull.json#mapTiled": {
-            "scaleInDock": 0.0332
+            "scaleInDock": 0.7584
         },
         "bgFull.json#treesTiled": {
-            "scaleInDock": 0.1601
+            "scaleInDock": 0.0688
         },
         "bgFull.tsx": {
             "scaleInEditor": 1
@@ -44,6 +45,7 @@
     },
     "map.lastUsedExportFilter": "JSON map files (*.json)",
     "openFiles": [
+        "bgFull.json"
     ],
     "project": "bgFull.tiled-project",
     "property.type": "bool",
@@ -57,7 +59,7 @@
     ],
     "tileset.embedInMap": true,
     "tileset.tileSize": {
-        "height": 100,
-        "width": 100
+        "height": 25,
+        "width": 25
     }
 }
