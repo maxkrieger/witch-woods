@@ -49,7 +49,7 @@ setInterval(
       const concated = room.status.blue.concat(room.status.red);
       const reqs = sampleSize(concated, concated.length);
       const places = sampleSize(RANGES, reqs.length);
-      reqs.forEach(({ resourceType }, idx) => {
+      reqs?.forEach(({ resourceType }, idx) => {
         times(random(0, 5), () => {
           const item = makeResource(
             resourceTypes[resourceType],
@@ -68,7 +68,7 @@ setInterval(
   () =>
     Object.entries(rooms).forEach(([roomID, room]: [string, GameState]) => {
       let update = false;
-      Object.entries(room.players).forEach(([playerID, player]) => {
+      Object.entries(room.players)?.forEach(([playerID, player]) => {
         if (player.effect.kind !== "normal") {
           if (player.effect.remaining <= 0) {
             rooms[roomID].players[playerID].effect = { kind: "normal" };
@@ -77,7 +77,7 @@ setInterval(
           }
           update = true;
         }
-        player.inventory.forEach((entry, idx) => {
+        player.inventory?.forEach((entry, idx) => {
           if (entry !== null && entry.cooldown !== 0) {
             rooms[roomID].players[playerID].inventory[idx]!.cooldown--;
             update = true;
@@ -93,7 +93,7 @@ setInterval(
 
 setInterval(() => {
   Object.entries(rooms).forEach(([id, room]: [string, GameState]) => {
-    Object.values(room.objects).forEach((resource: GameObject) => {
+    Object.values(room.objects)?.forEach((resource: GameObject) => {
       if (resource.channeling !== null) {
         if (resource.health > 0) {
           rooms[id].objects[resource.id].health--;
@@ -113,15 +113,15 @@ setInterval(() => {
               (inv as InventoryEntryI).resourceType === resource.resourceType
           );
           if (matchingResourceIdxInInv > -1) {
-            (rooms[id].players[playerID].inventory[
+            (rooms[id].players[playerID]?.inventory[
               matchingResourceIdxInInv
             ] as InventoryEntryI).quantity++;
           } else if (
-            rooms[id].players[playerID].inventory.filter(
+            rooms[id].players[playerID]?.inventory?.filter(
               (item) => item !== null
             ).length < 4
           ) {
-            const firstNull = rooms[id].players[playerID].inventory.findIndex(
+            const firstNull = rooms[id].players[playerID]?.inventory?.findIndex(
               (en) => en === null
             );
             if (firstNull > -1) {
@@ -131,7 +131,7 @@ setInterval(() => {
                 cooldown: 0,
               };
             } else {
-              rooms[id].players[playerID].inventory.push({
+              rooms[id].players[playerID]?.inventory?.push({
                 quantity: 1,
                 resourceType: resource.resourceType,
                 cooldown: 0,
@@ -327,7 +327,7 @@ io.on("connection", (socket: Socket) => {
     );
     socket.on("dumpItems", () => {
       let dumped = false;
-      rooms["room1"].players[playerInit.id].inventory.forEach(
+      rooms["room1"].players[playerInit.id].inventory?.forEach(
         (invEntry, idx) => {
           if (invEntry === null) {
             return;
@@ -345,16 +345,16 @@ io.on("connection", (socket: Socket) => {
             if (remainingNeeded > 0) {
               dumped = true;
               const remainingGiven = Math.min(remainingNeeded, inv.quantity);
-              (rooms["room1"].players[playerInit.id].inventory[
+              (rooms["room1"].players[playerInit.id]?.inventory[
                 idx
               ] as InventoryEntryI).quantity -= remainingGiven;
               rooms["room1"].status[playerInit.team][
                 matchingResourceIdx
               ].quantity += remainingGiven;
               if (
-                (rooms["room1"].players[playerInit.id].inventory[
+                (rooms["room1"].players[playerInit.id]?.inventory[
                   idx
-                ] as InventoryEntryI).quantity === 0
+                ] as InventoryEntryI)?.quantity === 0
               ) {
                 rooms["room1"].players[playerInit.id].inventory[idx] = null;
               }
