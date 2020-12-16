@@ -77,6 +77,14 @@ export const RANGES: Range[] = [
     rangeX: [3480, 4200],
     rangeY: [75, 680],
   },
+  {
+    rangeX: [9200, 9800],
+    rangeY: [4200, 4600],
+  },
+  {
+    rangeX: [100, 600],
+    rangeY: [4200, 4600],
+  },
 ];
 
 export const MushredResource: ResourceDefinition = {
