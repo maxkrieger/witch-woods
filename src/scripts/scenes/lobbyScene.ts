@@ -4,7 +4,9 @@ export default class LobbyScene extends Phaser.Scene {
   }
   myName: string;
   message = "";
-  preload() {}
+  preload() {
+    this.load.audio("music", "assets/sound/ambient.m4a");
+  }
   init({ name, message }: any) {
     if (name) {
       this.myName = name;
@@ -61,5 +63,7 @@ export default class LobbyScene extends Phaser.Scene {
     const el = this.add.dom(0, 0, form);
     const el1 = this.add.dom(0, 40, btn);
     container.add([el, el1]);
+
+    this.sound.play("music");
   }
 }

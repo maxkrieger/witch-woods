@@ -57,6 +57,7 @@ export default class MainScene extends Phaser.Scene {
   }
   preload() {
     this.add.text(100, 100, "loading...", { color: "#FFFFFF" });
+    this.load.audio("music2","assets/sound/bgMusicSubtle.m4a");
   }
   init({ name }: any) {
     this.myName = name;
@@ -252,6 +253,8 @@ export default class MainScene extends Phaser.Scene {
   };
 
   create() {
+    this.sound.stopAll();
+    this.sound.play("music2");
     this.sounds.seeing_eye = this.sound.add("seeing_eye_sound");
     this.sounds.ice = this.sound.add("ice_sound");
     this.sounds.drop = this.sound.add("drop_sound");
