@@ -64,9 +64,9 @@ export const Flower1Resource: ResourceDefinition = {
 
 export const IvyResource: ResourceDefinition = {
   type: ResourceType.IVY,
-  maxHealth: 3,
+  maxHealth: 4,
   spriteIndex: 3,
-  ability: Ability.SEEING_EYE,
+  ability: Ability.TELEPORT,
 
   rangeX: [3838, 6000],
   rangeY: [2962, 3736],
