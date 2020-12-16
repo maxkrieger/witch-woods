@@ -260,7 +260,7 @@ export default class MainScene extends Phaser.Scene {
     this.layerCol.setCollision(13);
 
     this.layerColTrees = map.createStaticLayer("CollidesTrees", tilesetGround);
-    this.layerCol.setVisible(false);
+    this.layerColTrees.setVisible(false);
     this.layerColTrees.setCollision(13);
     //layer.scale = 4;
 
