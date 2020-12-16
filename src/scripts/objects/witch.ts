@@ -31,7 +31,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     scene.physics.add.existing(this);
     this.body.enable = true;
 
-    this.body.setSize(30, 80);
+    this.body.setSize(30, 50);
     this.setCollideWorldBounds(true);
     this.moving = false;
     this.facing = Facing.RIGHT;
