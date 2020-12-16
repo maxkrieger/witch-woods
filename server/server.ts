@@ -319,7 +319,8 @@ io.on("connection", (socket: Socket) => {
             message: `${playerInit.team} team wins!`,
             id: "",
           });
-          rooms["room1"].status.state = "ENDED";
+          rooms["room1"].status.state = `ENDED`;
+          rooms["room1"].status.winner = playerInit.team;
           io.to("room1").emit("gameState", rooms["room1"]);
           rooms["room1"] = gamestate();
           return;

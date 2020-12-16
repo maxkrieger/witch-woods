@@ -212,6 +212,7 @@ export interface Status {
   red: ResourceRequirement[];
   blue: ResourceRequirement[];
   state: "LOBBY" | "STARTED" | "ENDED";
+  winner: "NONE" | Team;
 }
 
 export interface GameState {
@@ -268,6 +269,7 @@ export default (): GameState => {
       red: redReqs,
       blue: blueReqs,
       state: "LOBBY",
+      winner: "NONE",
     },
   };
   times(12, () => makeResource(MushredResource)).forEach(

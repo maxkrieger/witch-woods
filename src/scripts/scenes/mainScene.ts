@@ -79,11 +79,11 @@ export default class MainScene extends Phaser.Scene {
     var layer = map.createStaticLayer("Trees", tilesetTrees);
     layer.setDepth(2);
 
-    var layerCol = map.createStaticLayer("Collides",tilesetGround);
+    var layerCol = map.createStaticLayer("Collides", tilesetGround);
     layerCol.setVisible(false);
     layerCol.setCollision(5);
     //layer.scale = 4;
-    
+
     this.cursor = this.input.keyboard.createCursorKeys();
     this.cursor.down?.setEmitOnRepeat(true);
     this.cursor.up?.setEmitOnRepeat(true);
@@ -164,7 +164,12 @@ export default class MainScene extends Phaser.Scene {
     socket.on("gameState", (state: GameState) => {
       if (state.status.state === "ENDED") {
         console.log("game over");
-        this.scene.start("LobbyScene", { name: this.myName });
+        this.scene.start("LobbyScene", {
+          name: this.myName,
+          message: `you ${
+            state.status.winner === this.myTeam ? "won!" : "lost"
+          }`,
+        });
       }
       this.requirementsSprite.setRequirements(
         state.status[state.players[this.myID].team]
@@ -223,7 +228,7 @@ export default class MainScene extends Phaser.Scene {
             const me = this.gameObjects.sprites[this.myID];
             console.log(this.myID);
             console.log(this.gameObjects.sprites);
-            this.physics.add.collider(me,layerCol,this.collided);
+            this.physics.add.collider(me, layerCol, this.collided);
           }
         } else {
           const me = this.gameObjects.sprites[player.id] as Witch;
@@ -259,11 +264,6 @@ export default class MainScene extends Phaser.Scene {
         }
       });
     });
-
-    
-
-    
-    
 
     this.debugText = new Phaser.GameObjects.Text(this, 10, 10, `connecting`, {
       color: "#FFFFFF",
