@@ -16,7 +16,7 @@ export default class PreloadScene extends Phaser.Scene {
       { frameWidth: 230, frameHeight: 230 }
     );
     this.load.image("pentagram", [
-      "assets/img/summon_circle.png",
+      "assets/img/summon_circle2.png",
       "assets/img/norm.png",
     ]);
     this.load.image("icetrap_off", "assets/img/spell_icons/icetrap_off.png");
@@ -52,7 +52,7 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start("MainScene");
+    this.scene.start("LobbyScene");
 
     /**
      * This is how you would dynamically import the mainScene class (with code splitting),

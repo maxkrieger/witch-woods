@@ -18,7 +18,7 @@ import Inventory from "../objects/inventory";
 import StaticResource from "../objects/staticResource";
 import RequirementHUD from "../objects/requirementHUD";
 import IceTrap from "../objects/icetrap";
-import { UP } from "phaser";
+import { socket } from "../game";
 
 export const KEYS = ["Z", "X", "C", "V"];
 interface GameObjects {
@@ -31,6 +31,7 @@ export default class MainScene extends Phaser.Scene {
   cursor: Phaser.Types.Input.Keyboard.CursorKeys;
   movementSendInterval: Phaser.Time.TimerEvent;
   myID: string;
+  myName: string;
   myTeam: Team;
   socket: Socket;
   inventorySprite: Inventory;
@@ -57,6 +58,9 @@ export default class MainScene extends Phaser.Scene {
     this.load.tilemapTiledJSON("level1", "assets/tilemaps/bgFull/bgFull.json");
     this.load.image("bgFull", "assets/tilemaps/bgFull/bgFull.jpg");
     this.load.image("treeSheet", "assets/img/env_static/trees/treeSheet.png");
+  }
+  init({ name }: any) {
+    this.myName = name;
   }
 
   create() {
@@ -106,17 +110,9 @@ export default class MainScene extends Phaser.Scene {
 
     // this.lights.enable().setAmbientColor(0x555555);
 
-    const socket = io(
-      process.env.NODE_ENV === "production"
-        ? "wss://witch-woods.maxkrieger.repl.co"
-        : // : "wss://witch-woods.maxkrieger.repl.co"
-          "ws://localhost:6660"
-    );
     this.socket = socket;
-    socket.on("connect", () => {
-      console.log("SOCKET CONNECTED", socket.connected, socket.id);
-      socket.emit("join", { name: "max" });
-    });
+    socket.emit("join", { name: this.myName });
+
     socket.on("myPlayer", (player: Player) => {
       this.myID = player.id;
       this.myTeam = player.team;
@@ -200,7 +196,8 @@ export default class MainScene extends Phaser.Scene {
             player.y,
             player.id,
             player.id === this.myID,
-            player.team
+            player.team,
+            player.name
           ).setDepth(1);
           if (player.id === this.myID) {
             this.cameras.main.startFollow(

@@ -9,6 +9,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
   facing: Facing;
   moving: boolean;
   prevState: Player;
+  nameText: Phaser.GameObjects.Text;
 
   team: Team;
   effect: Effect = { kind: "normal" };
@@ -19,7 +20,8 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     y: number,
     id: string,
     isMe: boolean,
-    team: Team
+    team: Team,
+    name: string
   ) {
     super(scene, x, y, `witch_${team}`);
     this.team = team;
@@ -37,8 +39,12 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
     this.img = new Phaser.GameObjects.Image(scene, x, y, "ice")
       .setVisible(false)
       .setDepth(5);
-
     scene.add.existing(this.img);
+
+    this.nameText = new Phaser.GameObjects.Text(scene, x, y, name, {
+      color: "#FFFFFF",
+    });
+    scene.add.existing(this.nameText);
 
     scene.anims.create({
       key: "blue_right",
@@ -145,12 +151,15 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
         this.img.setVisible(true);
         const frame = Math.floor(13 * (player.effect.remaining / 30));
         this.img.setTexture("ice", frame);
+        this.img.setScale(1);
       } else if (player.effect.kind === "seeing_eye") {
         this.img.setVisible(true);
+        this.img.setScale(0.5);
         const frame = Math.floor(8 * (player.effect.remaining / 20));
         this.img.setTexture("eye", frame);
       } else {
         this.img.setVisible(false);
+        this.img.setScale(1);
       }
     }
     this.prevState = player;
@@ -175,5 +184,6 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
       this.x,
       this.y - (this.effect.kind === "seeing_eye" ? 150 : 0)
     );
+    this.nameText.setPosition(this.x, this.y - this.displayHeight / 2 - 20);
   };
 }
