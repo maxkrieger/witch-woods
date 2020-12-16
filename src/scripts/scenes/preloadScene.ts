@@ -5,6 +5,7 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
+    this.add.text(100, 100, "loading...", { color: "#FFFFFF" });
     this.load.spritesheet(
       "witch_blue",
       "assets/img/sprites/sprite_sheet/sprite_sheet_blue.png",
@@ -34,6 +35,7 @@ export default class PreloadScene extends Phaser.Scene {
       frameWidth: 460,
       frameHeight: 460,
     });
+
     this.load.spritesheet(
       "eye",
       "assets/img/spell_sheets/seeingeye_sprite.png",
@@ -49,6 +51,10 @@ export default class PreloadScene extends Phaser.Scene {
       frameWidth: 255,
       frameHeight: 256,
     });
+
+    this.load.tilemapTiledJSON("level1", "assets/tilemaps/bgFull/bgFull.json");
+    this.load.image("bgFull", "assets/tilemaps/bgFull/bgFull.jpg");
+    this.load.image("treeSheet", "assets/img/env_static/trees/treeSheet.png");
   }
 
   create() {

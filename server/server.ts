@@ -148,6 +148,17 @@ io.on("connection", (socket: Socket) => {
     socket.join("room1");
     socket.emit("myPlayer", playerInit);
     io.to("room1").emit("gameState", rooms["room1"]);
+    // setTimeout(() => {
+    //   io.to("room1").emit("tellMessage", {
+    //     message: `${playerInit.team} team wins!`,
+    //     id: "",
+    //   });
+    //   rooms["room1"].status.state = `ENDED`;
+    //   rooms["room1"].status.winner = playerInit.team;
+    //   io.to("room1").emit("gameState", rooms["room1"]);
+    //   rooms["room1"] = gamestate();
+    //   return;
+    // }, 5000);
     socket.on(
       "move",
       ({

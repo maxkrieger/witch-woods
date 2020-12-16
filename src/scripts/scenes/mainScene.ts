@@ -38,86 +38,32 @@ export default class MainScene extends Phaser.Scene {
   requirementsSprite: RequirementHUD;
   bluePentagram: Pentagram;
   redPentagram: Pentagram;
+  allyBar: Phaser.GameObjects.Rectangle;
+  enemyBar: Phaser.GameObjects.Rectangle;
   pentagramInRange: boolean;
   particles: Phaser.GameObjects.Particles.ParticleEmitterManager;
   debugText: Phaser.GameObjects.Text;
   infoText: Phaser.GameObjects.Text;
+  layerCol: Phaser.Tilemaps.StaticTilemapLayer;
   nearTrap: string | null = null;
   placingTrapSlot = -1;
   constructor() {
     super({ key: "MainScene" });
-    this.gameObjects = {
-      sprites: {},
-      inventory: [],
-    };
   }
   preload() {
     this.add.text(100, 100, "loading...", { color: "#FFFFFF" });
-    this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
-
-    //load tilemap stuff
-    this.load.tilemapTiledJSON("level1", "assets/tilemaps/bgFull/bgFull.json");
-    this.load.image("bgFull", "assets/tilemaps/bgFull/bgFull.jpg");
-    this.load.image("treeSheet", "assets/img/env_static/trees/treeSheet.png");
   }
   init({ name }: any) {
     this.myName = name;
   }
-
-  create() {
-    console.log(process.env.NODE_ENV);
-
-    this.cameras.main.setBounds(0, 0, 10000, 5800);
-    this.physics.world.setBounds(0, 0, 10000, 5800);
-    //tilemap add:
-    var map = this.make.tilemap({ key: "level1" });
-    //var tilesetGround = map.addTilesetImage('mapFull', 'bgFull');
-    var tilesetGround = map.addTilesetImage("mapTiled", "bgFull");
-    var layer = map.createStaticLayer("Ground", tilesetGround);
-
-    var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
-    var layer = map.createStaticLayer("Trees", tilesetTrees);
-    layer.setDepth(2);
-
-    var layerCol = map.createStaticLayer("Collides", tilesetGround);
-    layerCol.setVisible(false);
-    layerCol.setCollision(5);
-    //layer.scale = 4;
-
-    this.cursor = this.input.keyboard.createCursorKeys();
-    this.cursor.down?.setEmitOnRepeat(true);
-    this.cursor.up?.setEmitOnRepeat(true);
-    this.cursor.right?.setEmitOnRepeat(true);
-    this.cursor.left?.setEmitOnRepeat(true);
-    this.cursor.space?.setEmitOnRepeat(false);
-
-    this.cursor.space?.on("down", this.setChanneling(true));
-    this.cursor.space?.on("up", this.setChanneling(false));
-    this.cursor.down?.on("down", this.setPlayerY(300));
-    this.cursor.down?.on("up", this.setPlayerY(0));
-    this.cursor.up?.on("down", this.setPlayerY(-300));
-    this.cursor.up?.on("up", this.setPlayerY(0));
-    this.cursor.left?.on("down", this.setPlayerX(-300));
-    this.cursor.left?.on("up", this.setPlayerX(0));
-    this.cursor.right?.on("down", this.setPlayerX(300));
-    this.cursor.right?.on("up", this.setPlayerX(0));
-
-    this.bluePentagram = new Pentagram(this, 1776, 1024, Team.BLUE);
-    this.redPentagram = new Pentagram(this, 8400, 1024, Team.RED);
-    this.inventorySprite = new Inventory(this);
-    this.requirementsSprite = new RequirementHUD(this);
-    this.particles = this.add.particles("particle_blue");
-
-    const spellKeys = this.input.keyboard.addKeys(KEYS.join(",")) as any;
-    spellKeys.Z?.on("down", this.handleSpellKey(0));
-    spellKeys.X?.on("down", this.handleSpellKey(1));
-    spellKeys.C?.on("down", this.handleSpellKey(2));
-    spellKeys.V?.on("down", this.handleSpellKey(3));
-
-    this.input.on("pointerdown", this.handleClick);
-
-    // this.lights.enable().setAmbientColor(0x555555);
-
+  connect = () => {
+    if (this.gameObjects) {
+      Object.values(this.gameObjects.sprites).forEach((spr) => spr.destroy());
+    }
+    this.gameObjects = {
+      sprites: {},
+      inventory: [],
+    };
     this.socket = socket;
     socket.emit("join", { name: this.myName });
 
@@ -226,9 +172,7 @@ export default class MainScene extends Phaser.Scene {
               100
             );
             const me = this.gameObjects.sprites[this.myID];
-            console.log(this.myID);
-            console.log(this.gameObjects.sprites);
-            this.physics.add.collider(me, layerCol, this.collided);
+            this.physics.add.collider(me, this.layerCol);
           }
         } else {
           const me = this.gameObjects.sprites[player.id] as Witch;
@@ -264,6 +208,57 @@ export default class MainScene extends Phaser.Scene {
         }
       });
     });
+  };
+
+  create() {
+    this.cameras.main.setBounds(0, 0, 10000, 5800);
+    this.physics.world.setBounds(0, 0, 10000, 5800);
+    //tilemap add:
+    var map = this.make.tilemap({ key: "level1" });
+    //var tilesetGround = map.addTilesetImage('mapFull', 'bgFull');
+    var tilesetGround = map.addTilesetImage("mapTiled", "bgFull");
+    var layer = map.createStaticLayer("Ground", tilesetGround);
+
+    var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
+    var layer = map.createStaticLayer("Trees", tilesetTrees);
+    layer.setDepth(2);
+
+    this.layerCol = map.createStaticLayer("Collides", tilesetGround);
+    this.layerCol.setVisible(false);
+    this.layerCol.setCollision(5);
+    //layer.scale = 4;
+
+    this.cursor = this.input.keyboard.createCursorKeys();
+    this.cursor.down?.setEmitOnRepeat(true);
+    this.cursor.up?.setEmitOnRepeat(true);
+    this.cursor.right?.setEmitOnRepeat(true);
+    this.cursor.left?.setEmitOnRepeat(true);
+    this.cursor.space?.setEmitOnRepeat(false);
+
+    this.cursor.space?.on("down", this.setChanneling(true));
+    this.cursor.space?.on("up", this.setChanneling(false));
+    this.cursor.down?.on("down", this.setPlayerY(300));
+    this.cursor.down?.on("up", this.setPlayerY(0));
+    this.cursor.up?.on("down", this.setPlayerY(-300));
+    this.cursor.up?.on("up", this.setPlayerY(0));
+    this.cursor.left?.on("down", this.setPlayerX(-300));
+    this.cursor.left?.on("up", this.setPlayerX(0));
+    this.cursor.right?.on("down", this.setPlayerX(300));
+    this.cursor.right?.on("up", this.setPlayerX(0));
+
+    this.bluePentagram = new Pentagram(this, 1776, 1024, Team.BLUE);
+    this.redPentagram = new Pentagram(this, 8400, 1024, Team.RED);
+    this.inventorySprite = new Inventory(this);
+    this.requirementsSprite = new RequirementHUD(this);
+    this.particles = this.add.particles("particle_blue");
+
+    const spellKeys = this.input.keyboard.addKeys(KEYS.join(",")) as any;
+    spellKeys.Z?.on("down", this.handleSpellKey(0));
+    spellKeys.X?.on("down", this.handleSpellKey(1));
+    spellKeys.C?.on("down", this.handleSpellKey(2));
+    spellKeys.V?.on("down", this.handleSpellKey(3));
+
+    this.input.on("pointerdown", this.handleClick);
 
     this.debugText = new Phaser.GameObjects.Text(this, 10, 10, `connecting`, {
       color: "#FFFFFF",
@@ -291,10 +286,18 @@ export default class MainScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setDepth(100);
     this.add.existing(this.infoText);
+
+    this.allyBar = this.add
+      .rectangle(0, 0, 0, 20, 0xffffff, 0.8)
+      .setOrigin(0)
+      .setScrollFactor(0);
+    this.enemyBar = this.add
+      .rectangle(0, 0, 0, 20, 0xffffff, 0.8)
+      .setOrigin(0)
+      .setScrollFactor(0);
+    this.connect();
   }
-  collided = () => {
-    //this.gameObjects[this.myID].setVelocity(0, 0);
-  };
+
   handleClick = (pointer: any) => {
     const { worldX, worldY } = pointer;
     if (this.placingTrapSlot > -1) {

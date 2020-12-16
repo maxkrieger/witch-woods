@@ -43,6 +43,9 @@ export default class LobbyScene extends Phaser.Scene {
       if (inp.value === "") {
         return false;
       }
+      if (this.scene.isActive("MainScene")) {
+        (this.scene.get("MainScene") as any).connect();
+      }
       this.scene.start("MainScene", { name: inp.value });
       return false;
     };
