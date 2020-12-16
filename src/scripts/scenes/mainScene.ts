@@ -61,13 +61,7 @@ export default class MainScene extends Phaser.Scene {
   connect = () => {
     if (this.gameObjects) {
       Object.values(this.gameObjects.sprites).forEach((spr) => spr.destroy());
-      socket.off("myPlayer");
-      socket.off("removePlayer");
-      socket.off("explode");
-      socket.off("removeResource");
-      socket.off("removeTrap");
-      socket.off("tellMessage");
-      socket.off("gameState");
+      socket.offAny();
     }
     this.gameObjects = {
       sprites: {},
@@ -117,17 +111,19 @@ export default class MainScene extends Phaser.Scene {
       }
     );
     socket.on("gameState", (state: GameState) => {
-      if (!this.myTeam || !this.myID) {
+      if (!this.myTeam || !this.myID || !this.cameras.main) {
         return;
       }
       if (state.status.state === "ENDED") {
         console.log("game over");
-        this.scene.start("LobbyScene", {
+        socket.offAny();
+        this.scene.start("WinLoseScene", {
           name: this.myName,
-          message: `you ${
-            state.status.winner === this.myTeam ? "won!" : "lost"
+          message: `${this.myTeam}${
+            state.status.winner === this.myTeam ? "win" : "lose"
           }`,
         });
+        return;
       }
       const myReqPercent =
         sumHave(state.status[this.myTeam]) / sumReqs(state.status[this.myTeam]);

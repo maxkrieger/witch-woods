@@ -55,6 +55,12 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.tilemapTiledJSON("level1", "assets/tilemaps/bgFull/bgFull.json");
     this.load.image("bgFull", "assets/tilemaps/bgFull/bgFull.jpg");
     this.load.image("treeSheet", "assets/img/env_static/trees/treeSheet.png");
+
+    this.load.image("bgreeter", "assets/img/screens/loadingscreen2.png");
+    this.load.image("bluelose", "assets/img/screens/bluelose.png");
+    this.load.image("bluewin", "assets/img/screens/bluewin.png");
+    this.load.image("redlose", "assets/img/screens/redlose.png");
+    this.load.image("redwin", "assets/img/screens/redwin.png");
   }
 
   create() {

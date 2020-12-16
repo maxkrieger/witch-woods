@@ -169,6 +169,8 @@ const balancedNextTeam = (roomid: string) => {
   return reds.length > blues.length ? Team.BLUE : Team.RED;
 };
 
+const AUTOLOSE = false;
+
 io.on("connection", (socket: Socket) => {
   socket.on("join", ({ name }: { name: string }) => {
     const playerInit = makePlayer(name, balancedNextTeam("room1"));
@@ -176,17 +178,28 @@ io.on("connection", (socket: Socket) => {
     socket.join("room1");
     socket.emit("myPlayer", playerInit);
     io.to("room1").emit("gameState", rooms["room1"]);
-    // setTimeout(() => {
-    //   io.to("room1").emit("tellMessage", {
-    //     message: `${playerInit.team} team wins!`,
-    //     id: "",
-    //   });
-    //   rooms["room1"].status.state = `ENDED`;
-    //   rooms["room1"].status.winner = playerInit.team;
-    //   io.to("room1").emit("gameState", rooms["room1"]);
-    //   rooms["room1"] = gamestate();
-    //   return;
-    // }, 5000);
+    if (AUTOLOSE) {
+      setTimeout(() => {
+        socket.removeAllListeners("dumpItems");
+        socket.removeAllListeners("disconnect");
+        socket.removeAllListeners("channelResource");
+        socket.removeAllListeners("activateTrap");
+        socket.removeAllListeners("explode");
+        socket.removeAllListeners("seeingEye");
+        socket.removeAllListeners("teleport");
+        socket.removeAllListeners("placeTrap");
+        socket.removeAllListeners("move");
+        io.to("room1").emit("tellMessage", {
+          message: `${playerInit.team} team wins!`,
+          id: "",
+        });
+        rooms["room1"].status.state = `ENDED`;
+        rooms["room1"].status.winner = Team.BLUE;
+        io.to("room1").emit("gameState", rooms["room1"]);
+        rooms["room1"] = gamestate();
+        return;
+      }, 10000);
+    }
     socket.on(
       "move",
       ({
@@ -354,6 +367,15 @@ io.on("connection", (socket: Socket) => {
             sumHave(rooms["room1"].status[playerInit.team]) ===
           0
         ) {
+          socket.removeAllListeners("dumpItems");
+          socket.removeAllListeners("disconnect");
+          socket.removeAllListeners("channelResource");
+          socket.removeAllListeners("activateTrap");
+          socket.removeAllListeners("explode");
+          socket.removeAllListeners("seeingEye");
+          socket.removeAllListeners("teleport");
+          socket.removeAllListeners("placeTrap");
+          socket.removeAllListeners("move");
           io.to("room1").emit("tellMessage", {
             message: `${playerInit.team} team wins!`,
             id: "",

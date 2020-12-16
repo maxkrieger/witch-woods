@@ -7,6 +7,7 @@ const DEFAULT_HEIGHT = 720;
 
 import { io, Socket } from "socket.io-client";
 import LobbyScene from "./scenes/lobbyScene";
+import WinLoseScene from "./scenes/winLoseScene";
 
 export const socket = io(
   process.env.NODE_ENV === "production"
@@ -34,7 +35,7 @@ const config: Phaser.Types.Core.GameConfig = {
     width: DEFAULT_WIDTH,
     height: DEFAULT_HEIGHT,
   },
-  scene: [PreloadScene, LobbyScene, MainScene],
+  scene: [PreloadScene, LobbyScene, WinLoseScene, MainScene],
   physics: {
     default: "arcade",
     arcade: {

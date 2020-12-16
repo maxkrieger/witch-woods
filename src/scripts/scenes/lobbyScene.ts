@@ -4,9 +4,7 @@ export default class LobbyScene extends Phaser.Scene {
   }
   myName: string;
   message = "";
-  preload() {
-    this.load.image("bgreeter", "assets/img/screens/loadingscreen2.png");
-  }
+  preload() {}
   init({ name, message }: any) {
     if (name) {
       this.myName = name;
