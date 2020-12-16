@@ -75,8 +75,15 @@ export default class MainScene extends Phaser.Scene {
     var tilesetGround = map.addTilesetImage("mapTiled", "bgFull");
     var layer = map.createStaticLayer("Ground", tilesetGround);
 
-    //layer.scale = 4;
+    var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
+    var layer = map.createStaticLayer("Trees", tilesetTrees);
+    layer.setDepth(2);
 
+    var layerCol = map.createStaticLayer("Collides",tilesetGround);
+    layerCol.setVisible(false);
+    layerCol.setCollision(5);
+    //layer.scale = 4;
+    
     this.cursor = this.input.keyboard.createCursorKeys();
     this.cursor.down?.setEmitOnRepeat(true);
     this.cursor.up?.setEmitOnRepeat(true);
@@ -213,6 +220,10 @@ export default class MainScene extends Phaser.Scene {
               100,
               100
             );
+            const me = this.gameObjects.sprites[this.myID];
+            console.log(this.myID);
+            console.log(this.gameObjects.sprites);
+            this.physics.add.collider(me,layerCol,this.collided);
           }
         } else {
           const me = this.gameObjects.sprites[player.id] as Witch;
@@ -249,9 +260,10 @@ export default class MainScene extends Phaser.Scene {
       });
     });
 
-    var tilesetTrees = map.addTilesetImage("treesTiled", "treeSheet");
-    var layer = map.createStaticLayer("Trees", tilesetTrees);
-    layer.setDepth(2);
+    
+
+    
+    
 
     this.debugText = new Phaser.GameObjects.Text(this, 10, 10, `connecting`, {
       color: "#FFFFFF",
@@ -280,6 +292,9 @@ export default class MainScene extends Phaser.Scene {
       .setDepth(100);
     this.add.existing(this.infoText);
   }
+  collided = () => {
+    //this.gameObjects[this.myID].setVelocity(0, 0);
+  };
   handleClick = (pointer: any) => {
     const { worldX, worldY } = pointer;
     if (this.placingTrapSlot > -1) {
