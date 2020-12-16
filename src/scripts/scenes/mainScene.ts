@@ -212,7 +212,8 @@ export default class MainScene extends Phaser.Scene {
           const me = this.gameObjects.sprites[player.id] as Witch;
           if (
             me.effect.kind !== "ice_trapped" &&
-            player.effect.kind === "ice_trapped"
+            player.effect.kind === "ice_trapped" &&
+            player.id === this.myID
           ) {
             this.sounds.ice.play();
           }
