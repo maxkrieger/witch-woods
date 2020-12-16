@@ -56,11 +56,17 @@ export default class PreloadScene extends Phaser.Scene {
     this.load.image("bgFull", "assets/tilemaps/bgFull/bgFull.jpg");
     this.load.image("treeSheet", "assets/img/env_static/trees/treeSheet.png");
 
-    this.load.image("bgreeter", "assets/img/screens/loadingscreen2.png");
+    this.load.image("bgreeter", "assets/img/screens/loading0.png");
     this.load.image("bluelose", "assets/img/screens/bluelose.png");
     this.load.image("bluewin", "assets/img/screens/bluewin.png");
     this.load.image("redlose", "assets/img/screens/redlose.png");
     this.load.image("redwin", "assets/img/screens/redwin.png");
+
+    this.load.audio("seeing_eye_sound", "assets/sound/seeing_eye.wav");
+    this.load.audio("ice_sound", "assets/sound/ice.wav");
+    this.load.audio("drop_sound", "assets/sound/drop.mp3");
+    this.load.audio("trap_sound", "assets/sound/trap_set.wav");
+    this.load.audio("teleport_sound", "assets/sound/teleport.wav");
   }
 
   create() {

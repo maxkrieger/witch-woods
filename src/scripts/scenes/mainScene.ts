@@ -49,6 +49,8 @@ export default class MainScene extends Phaser.Scene {
   layerCol: Phaser.Tilemaps.StaticTilemapLayer;
   nearTrap: string | null = null;
   placingTrapSlot = -1;
+
+  sounds: any = {};
   constructor() {
     super({ key: "MainScene" });
   }
@@ -206,6 +208,12 @@ export default class MainScene extends Phaser.Scene {
         } else {
           const me = this.gameObjects.sprites[player.id] as Witch;
           if (
+            me.effect.kind !== "ice_trapped" &&
+            player.effect.kind === "ice_trapped"
+          ) {
+            this.sounds.ice.play();
+          }
+          if (
             me.effect.kind !== "seeing_eye" &&
             player.effect.kind === "seeing_eye"
           ) {
@@ -240,6 +248,11 @@ export default class MainScene extends Phaser.Scene {
   };
 
   create() {
+    this.sounds.seeing_eye = this.sound.add("seeing_eye_sound");
+    this.sounds.ice = this.sound.add("ice_sound");
+    this.sounds.drop = this.sound.add("drop_sound");
+    this.sounds.trap = this.sound.add("trap_sound");
+    this.sounds.teleport = this.sound.add("teleport_sound");
     this.cameras.main.setBounds(0, 0, 10000, 5800);
     this.physics.world.setBounds(0, 0, 10000, 5800);
     //tilemap add:
@@ -345,6 +358,7 @@ export default class MainScene extends Phaser.Scene {
       );
       if (dist >= 400) {
         this.displayInfoMessage("");
+        this.sounds.trap.play();
         this.socket.emit("placeTrap", {
           player: this.myID,
           x: worldX,
@@ -402,9 +416,11 @@ export default class MainScene extends Phaser.Scene {
             x: myPentagram.x,
             y: myPentagram.y,
           });
+          this.sounds.teleport.play();
           break;
         case Ability.SEEING_EYE:
           this.socket.emit("seeingEye", { player: this.myID, slot: key });
+          this.sounds.seeing_eye.play();
           break;
         default:
           break;
@@ -564,6 +580,7 @@ export default class MainScene extends Phaser.Scene {
       this.pentagramInRange = inRange;
       if (inRange) {
         this.socket.emit("dumpItems");
+        this.sounds.drop.play();
       }
     }
   };
