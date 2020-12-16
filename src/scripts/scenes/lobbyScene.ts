@@ -51,7 +51,7 @@ export default class LobbyScene extends Phaser.Scene {
     form.appendChild(sub);
     const container = this.add.container(
       this.cameras.main.width / 2,
-      this.cameras.main.height / 2
+      this.cameras.main.height / 2 - 100
     );
     const btn = document.createElement("button");
     btn.innerHTML = "tutorial";
@@ -59,7 +59,7 @@ export default class LobbyScene extends Phaser.Scene {
       this.scene.start("TutorialScene");
     };
     const el = this.add.dom(0, 0, form);
-    const el1 = this.add.dom(0, 100, btn);
+    const el1 = this.add.dom(0, 40, btn);
     container.add([el, el1]);
   }
 }
