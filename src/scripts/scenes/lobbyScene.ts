@@ -2,17 +2,34 @@ export default class LobbyScene extends Phaser.Scene {
   constructor() {
     super({ key: "LobbyScene" });
   }
+  myName: string;
+  message = "";
   preload() {
     this.load.image("bgreeter", "assets/img/screens/loadingscreen2.png");
   }
+  init({ name, message }: any) {
+    if (name) {
+      this.myName = name;
+    }
+    if (message) {
+      this.message = message;
+    }
+  }
   create() {
     this.add.image(0, 0, "bgreeter").setOrigin(0);
+    this.add.text(100, 100, this.message, {
+      fontSize: "20px",
+      color: "#FFFFFF",
+    });
     this.cameras.main.setBackgroundColor("#000000");
 
     const form = document.createElement("form");
 
     const inp = document.createElement("input");
     inp.setAttribute("type", "text");
+    if (this.myName) {
+      inp.setAttribute("value", this.myName);
+    }
     inp.style.backgroundColor = "#000000";
     inp.style.color = "#FFFFFF";
     inp.id = "nameInput";
