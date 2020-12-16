@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { random, times } from "lodash";
+import { random, sample, sampleSize, times } from "lodash";
 
 export enum Ability {
   TELEPORT = "teleport",
@@ -253,21 +253,20 @@ export const makePlayer = (name: string, team: Team): Player => {
 };
 
 export default (): GameState => {
+  const resourceTypesArr = Object.keys(resourceTypes);
+  const redReqs = sampleSize(resourceTypesArr, 3).map((typ) =>
+    makeResourceReq(typ as ResourceType)
+  );
+  const blueReqs = sampleSize(resourceTypesArr, 3).map((typ) =>
+    makeResourceReq(typ as ResourceType)
+  );
   const init: GameState = {
     players: {},
     objects: {},
     traps: {},
     status: {
-      red: [
-        makeResourceReq(ResourceType.MUSHRED),
-        makeResourceReq(ResourceType.IVY),
-        makeResourceReq(ResourceType.ROSE),
-      ],
-      blue: [
-        makeResourceReq(ResourceType.MUSHRED),
-        makeResourceReq(ResourceType.IVY),
-        makeResourceReq(ResourceType.ROSE),
-      ],
+      red: redReqs,
+      blue: blueReqs,
       state: "LOBBY",
     },
   };
