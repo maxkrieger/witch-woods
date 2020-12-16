@@ -77,7 +77,7 @@ setInterval(
           }
           update = true;
         }
-        player.inventory?.forEach((entry, idx) => {
+        player?.inventory?.forEach((entry, idx) => {
           if (entry !== null && entry.cooldown !== 0) {
             rooms[roomID].players[playerID].inventory[idx]!.cooldown--;
             update = true;
@@ -327,7 +327,7 @@ io.on("connection", (socket: Socket) => {
     );
     socket.on("dumpItems", () => {
       let dumped = false;
-      rooms["room1"].players[playerInit.id].inventory?.forEach(
+      rooms["room1"].players[playerInit.id]?.inventory?.forEach(
         (invEntry, idx) => {
           if (invEntry === null) {
             return;
