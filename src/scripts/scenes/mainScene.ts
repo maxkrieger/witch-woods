@@ -254,7 +254,8 @@ export default class MainScene extends Phaser.Scene {
 
   create() {
     this.sound.stopAll();
-    this.sound.play("music2");
+    var music = this.sound.add('music2');
+    music.play();
     this.sounds.seeing_eye = this.sound.add("seeing_eye_sound");
     this.sounds.ice = this.sound.add("ice_sound");
     this.sounds.drop = this.sound.add("drop_sound");
