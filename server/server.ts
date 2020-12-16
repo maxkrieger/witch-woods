@@ -50,17 +50,14 @@ setInterval(
       const reqs = sampleSize(concated, concated.length);
       const places = sampleSize(RANGES, reqs.length);
       reqs.forEach(({ resourceType }, idx) => {
-        times(
-          random(5, Math.ceil(15 / resourceTypes[resourceType].maxHealth)),
-          () => {
-            const item = makeResource(
-              resourceTypes[resourceType],
-              places[idx].rangeX,
-              places[idx].rangeY
-            );
-            rooms[roomID].objects[item.id] = item;
-          }
-        );
+        times(random(0, 5), () => {
+          const item = makeResource(
+            resourceTypes[resourceType],
+            places[idx].rangeX,
+            places[idx].rangeY
+          );
+          rooms[roomID].objects[item.id] = item;
+        });
       });
       io.to(roomID).emit("gameState", rooms[roomID]);
     }),

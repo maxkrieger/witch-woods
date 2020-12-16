@@ -310,7 +310,7 @@ export default (): GameState => {
   const places = sampleSize(RANGES, redReqs.length + blueReqs.length);
   redReqs.forEach((r, idx) => {
     const place = places[idx];
-    times(Math.ceil(25 / resourceTypes[r.resourceType].maxHealth), () => {
+    times(r.quantityRequired - 5, () => {
       const item = makeResource(
         resourceTypes[r.resourceType],
         place.rangeX,
@@ -321,7 +321,7 @@ export default (): GameState => {
   });
   blueReqs.forEach((r, idx) => {
     const place = places[idx + redReqs.length - 1];
-    times(Math.ceil(20 / resourceTypes[r.resourceType].maxHealth), () => {
+    times(r.quantityRequired - 5, () => {
       const item = makeResource(
         resourceTypes[r.resourceType],
         place.rangeX,
