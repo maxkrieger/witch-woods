@@ -40,8 +40,8 @@ export const MushredResource: ResourceDefinition = {
   maxHealth: 5,
   spriteIndex: 0,
   ability: Ability.TELEPORT,
-  rangeX: [150, 2530],
-  rangeY: [230, 1870],
+  rangeX: [0, 724],
+  rangeY: [700, 1500],
 };
 
 export const MushorangeResource: ResourceDefinition = {
@@ -49,8 +49,8 @@ export const MushorangeResource: ResourceDefinition = {
   maxHealth: 10,
   spriteIndex: 1,
   ability: Ability.ICE_TRAP,
-  rangeX: [1350, 2950],
-  rangeY: [2600, 4550],
+  rangeX: [1200, 2200],
+  rangeY: [5080, 5800],
 };
 
 export const Flower1Resource: ResourceDefinition = {
@@ -58,8 +58,8 @@ export const Flower1Resource: ResourceDefinition = {
   maxHealth: 5,
   spriteIndex: 2,
   ability: Ability.TELEPORT,
-  rangeX: [2277, 4040],
-  rangeY: [4300, 5470],
+  rangeX: [9400, 10000],
+  rangeY: [630, 1525],
 };
 
 export const IvyResource: ResourceDefinition = {
@@ -78,8 +78,8 @@ export const MushstackResource: ResourceDefinition = {
   spriteIndex: 4,
   ability: Ability.SEEING_EYE,
 
-  rangeX: [6167, 8388],
-  rangeY: [4233, 5736],
+  rangeX: [7800, 9000],
+  rangeY: [5100, 5800],
 };
 
 export const MushwhiteResource: ResourceDefinition = {
@@ -88,8 +88,8 @@ export const MushwhiteResource: ResourceDefinition = {
   spriteIndex: 5,
   ability: Ability.ICE_TRAP,
 
-  rangeX: [7070, 8606],
-  rangeY: [2670, 4164],
+  rangeX: [2525, 3970],
+  rangeY: [3775, 5500],
 };
 
 export const Flower2Resource: ResourceDefinition = {
@@ -98,8 +98,8 @@ export const Flower2Resource: ResourceDefinition = {
   spriteIndex: 6,
   ability: Ability.SEEING_EYE,
 
-  rangeX: [7422, 10000],
-  rangeY: [247, 1900],
+  rangeX: [5970, 7480],
+  rangeY: [4130, 5564],
 };
 
 export const RoseResource: ResourceDefinition = {
