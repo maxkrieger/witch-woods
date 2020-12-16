@@ -43,6 +43,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
 
     this.nameText = new Phaser.GameObjects.Text(scene, x, y, name, {
       color: "#FFFFFF",
+      align: "center",
     });
     scene.add.existing(this.nameText);
 
@@ -154,7 +155,7 @@ export default class Witch extends Phaser.Physics.Arcade.Sprite {
         this.img.setScale(1);
       } else if (player.effect.kind === "seeing_eye") {
         this.img.setVisible(true);
-        this.img.setScale(0.5);
+        this.img.setScale(0.25);
         const frame = Math.floor(8 * (player.effect.remaining / 20));
         this.img.setTexture("eye", frame);
       } else {

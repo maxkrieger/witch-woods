@@ -52,6 +52,7 @@ export default class MainScene extends Phaser.Scene {
     };
   }
   preload() {
+    this.add.text(100, 100, "loading...", { color: "#FFFFFF" });
     this.load.image("bg", ["assets/img/bg.png", "assets/img/norm.png"]);
 
     //load tilemap stuff
@@ -154,6 +155,10 @@ export default class MainScene extends Phaser.Scene {
       }
     );
     socket.on("gameState", (state: GameState) => {
+      if (state.status.state === "ENDED") {
+        console.log("game over");
+        this.scene.start("LobbyScene", { name: this.myName });
+      }
       this.requirementsSprite.setRequirements(
         state.status[state.players[this.myID].team]
       );

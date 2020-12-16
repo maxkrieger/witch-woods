@@ -310,6 +310,20 @@ io.on("connection", (socket: Socket) => {
         }
       );
       if (dumped) {
+        if (
+          !rooms["room1"].status[playerInit.team].find(
+            (req) => req.quantityRequired - req.quantity !== 0
+          )
+        ) {
+          io.to("room1").emit("tellMessage", {
+            message: `${playerInit.team} team wins!`,
+            id: "",
+          });
+          rooms["room1"].status.state = "ENDED";
+          io.to("room1").emit("gameState", rooms["room1"]);
+          rooms["room1"] = gamestate();
+          return;
+        }
         io.to("room1").emit("tellMessage", {
           message: `you dropped off items`,
           id: playerInit.id,
