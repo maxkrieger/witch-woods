@@ -7,6 +7,8 @@ import {
   Player,
   ResourceType,
   resourceTypes,
+  sumHave,
+  sumReqs,
   Team,
 } from "../../gamestate";
 import Mushroom from "../objects/staticResource";
@@ -108,6 +110,9 @@ export default class MainScene extends Phaser.Scene {
       }
     );
     socket.on("gameState", (state: GameState) => {
+      if (!this.myTeam || !this.myID) {
+        return;
+      }
       if (state.status.state === "ENDED") {
         console.log("game over");
         this.scene.start("LobbyScene", {
@@ -117,6 +122,27 @@ export default class MainScene extends Phaser.Scene {
           }`,
         });
       }
+      const myReqPercent =
+        sumHave(state.status[this.myTeam]) / sumReqs(state.status[this.myTeam]);
+      const enemyTeam = this.myTeam === Team.RED ? Team.BLUE : Team.RED;
+      const enemyReqPercent =
+        sumHave(state.status[enemyTeam]) / sumReqs(state.status[enemyTeam]);
+      this.allyBar.setFillStyle(
+        this.myTeam === Team.RED ? 0xff0000 : 0x0000ff,
+        0.8
+      );
+      this.enemyBar.setFillStyle(
+        enemyTeam === Team.RED ? 0xff0000 : 0x0000ff,
+        0.8
+      );
+      const halfWidth = this.cameras.main.width / 2;
+      this.enemyBar.setPosition(
+        this.cameras.main.width - enemyReqPercent * halfWidth,
+        0
+      );
+      this.allyBar.setSize(halfWidth * myReqPercent, 20);
+      this.enemyBar.setSize(halfWidth * enemyReqPercent, 20);
+
       this.requirementsSprite.setRequirements(
         state.status[state.players[this.myID].team]
       );

@@ -14,6 +14,8 @@ import gamestate, {
   makeTrap,
   RANGES,
   resourceTypes,
+  sumHave,
+  sumReqs,
   Team,
 } from "../src/gamestate";
 import { stringify } from "uuid";
@@ -348,9 +350,9 @@ io.on("connection", (socket: Socket) => {
       );
       if (dumped) {
         if (
-          !rooms["room1"].status[playerInit.team].find(
-            (req) => req.quantityRequired - req.quantity !== 0
-          )
+          sumReqs(rooms["room1"].status[playerInit.team]) -
+            sumHave(rooms["room1"].status[playerInit.team]) ===
+          0
         ) {
           io.to("room1").emit("tellMessage", {
             message: `${playerInit.team} team wins!`,

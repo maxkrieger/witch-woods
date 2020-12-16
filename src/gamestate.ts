@@ -8,6 +8,12 @@ export enum Ability {
   NONE = "none",
 }
 
+export const sumReqs = (reqs: ResourceRequirement[]) =>
+  reqs.reduce((a: number, b: ResourceRequirement) => a + b.quantityRequired, 0);
+
+export const sumHave = (reqs: ResourceRequirement[]) =>
+  reqs.reduce((a: number, b: ResourceRequirement) => a + b.quantity, 0);
+
 export const abilityCooldowns: { [ability in Ability]: number } = {
   [Ability.TELEPORT]: 30,
   [Ability.ICE_TRAP]: 20,
@@ -305,10 +311,10 @@ export default (): GameState => {
       init.objects[item.id] = item;
     });
   });
-  const bluePlaces = sampleSize(RANGES, redReqs.length);
+  const bluePlaces = sampleSize(RANGES, blueReqs.length);
   blueReqs.forEach((r, idx) => {
     const place = bluePlaces[idx];
-    times(Math.ceil(25 / resourceTypes[r.resourceType].maxHealth), () => {
+    times(Math.ceil(15 / resourceTypes[r.resourceType].maxHealth), () => {
       const item = makeResource(
         resourceTypes[r.resourceType],
         place.rangeX,
