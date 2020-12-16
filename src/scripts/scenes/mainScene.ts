@@ -47,6 +47,7 @@ export default class MainScene extends Phaser.Scene {
   debugText: Phaser.GameObjects.Text;
   infoText: Phaser.GameObjects.Text;
   layerCol: Phaser.Tilemaps.StaticTilemapLayer;
+  layerColTrees: Phaser.Tilemaps.StaticTilemapLayer;
   nearTrap: string | null = null;
   placingTrapSlot = -1;
   constructor() {
@@ -202,6 +203,8 @@ export default class MainScene extends Phaser.Scene {
             );
             const me = this.gameObjects.sprites[this.myID];
             this.physics.add.collider(me, this.layerCol);
+
+            this.physics.add.collider(me, this.layerColTrees);
           }
         } else {
           const me = this.gameObjects.sprites[player.id] as Witch;
@@ -253,8 +256,12 @@ export default class MainScene extends Phaser.Scene {
     layer.setDepth(2);
 
     this.layerCol = map.createStaticLayer("Collides", tilesetGround);
-    //this.layerCol.setVisible(false);
+    this.layerCol.setVisible(false);
     this.layerCol.setCollision(13);
+
+    this.layerColTrees = map.createStaticLayer("CollidesTrees", tilesetGround);
+    this.layerCol.setVisible(false);
+    this.layerColTrees.setCollision(13);
     //layer.scale = 4;
 
     this.cursor = this.input.keyboard.createCursorKeys();
