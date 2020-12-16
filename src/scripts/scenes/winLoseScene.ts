@@ -4,12 +4,17 @@ export default class WinLoseScene extends Phaser.Scene {
   }
   myName: string;
   message = "";
-  preload() {}
+  preload() {
+    this.load.audio("music", "assets/sound/atmoLoading.m4a");
+  }
   init({ name, message }: any) {
     this.myName = name;
     this.message = message;
   }
   create() {
+    this.sound.stopAll();
+    const music = this.sound.add("music");
+    music.play({loop: true});
     this.add.image(0, 0, this.message).setOrigin(0);
 
     this.cameras.main.setBackgroundColor("#000000");
