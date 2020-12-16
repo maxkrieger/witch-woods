@@ -61,6 +61,13 @@ export default class MainScene extends Phaser.Scene {
   connect = () => {
     if (this.gameObjects) {
       Object.values(this.gameObjects.sprites).forEach((spr) => spr.destroy());
+      socket.off("myPlayer");
+      socket.off("removePlayer");
+      socket.off("explode");
+      socket.off("removeResource");
+      socket.off("removeTrap");
+      socket.off("tellMessage");
+      socket.off("gameState");
     }
     this.gameObjects = {
       sprites: {},
