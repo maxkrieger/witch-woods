@@ -50,6 +50,7 @@ export default class MainScene extends Phaser.Scene {
   layerColTrees: Phaser.Tilemaps.StaticTilemapLayer;
   nearTrap: string | null = null;
   placingTrapSlot = -1;
+  steps: any;
 
   sounds: any = {};
   constructor() {
@@ -58,6 +59,7 @@ export default class MainScene extends Phaser.Scene {
   preload() {
     this.add.text(100, 100, "loading...", { color: "#FFFFFF" });
     this.load.audio("music2","assets/sound/atmoInGame.m4a");
+    this.load.audio("steps","assets/sound/steps.ogg");
   }
   init({ name }: any) {
     this.myName = name;
@@ -256,6 +258,10 @@ export default class MainScene extends Phaser.Scene {
     this.sound.stopAll();
     var music2 = this.sound.add('music2');
     music2.play({loop: true});
+
+    this.steps = this.sound.add('steps');
+    this.steps.play();
+
     this.sounds.seeing_eye = this.sound.add("seeing_eye_sound");
     this.sounds.ice = this.sound.add("ice_sound");
     this.sounds.drop = this.sound.add("drop_sound");
@@ -458,17 +464,22 @@ export default class MainScene extends Phaser.Scene {
     if (v !== 0 || (!this.cursor.down?.isDown && !this.cursor.up?.isDown)) {
       me.setVelocityY(v);
       if (v > 0) {
+        if (!this.steps.isPlaying) this.steps.play({loop: true});
         me.setMoving(true);
         me.setFacing(Facing.DOWN);
       } else if (v < 0) {
+
+        if (!this.steps.isPlaying) this.steps.play({loop: true});
         me.setMoving(true);
         me.setFacing(Facing.UP);
       } else if (v === 0) {
+
         if (this.cursor.left?.isDown) {
           me.setFacing(Facing.LEFT);
         } else if (this.cursor.right?.isDown) {
           me.setFacing(Facing.RIGHT);
         } else {
+          this.steps.stop();
           me.setMoving(false);
         }
       }
@@ -483,17 +494,21 @@ export default class MainScene extends Phaser.Scene {
     if (v !== 0 || (!this.cursor.left?.isDown && !this.cursor.right?.isDown)) {
       me.setVelocityX(v);
       if (v > 0) {
+        if (!this.steps.isPlaying) this.steps.play({loop: true});
         me.setMoving(true);
         me.setFacing(Facing.RIGHT);
       } else if (v < 0) {
+        if (!this.steps.isPlaying) this.steps.play({loop: true});
         me.setMoving(true);
         me.setFacing(Facing.LEFT);
       } else if (v === 0) {
+        
         if (this.cursor.down?.isDown) {
           me.setFacing(Facing.DOWN);
         } else if (this.cursor.up?.isDown) {
           me.setFacing(Facing.UP);
         } else {
+          this.steps.stop();
           me.setMoving(false);
         }
       }
