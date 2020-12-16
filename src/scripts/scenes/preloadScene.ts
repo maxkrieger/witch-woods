@@ -5,7 +5,10 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   preload() {
-    this.add.text(100, 100, "loading...", { color: "#FFFFFF" });
+    const txt = this.add.text(100, 100, "loading...", { color: "#FFFFFF" });
+    this.load.on("progress", (prog) => {
+      txt.setText(`loading... ${Math.round(prog * 100)}%`);
+    });
     this.load.spritesheet(
       "witch_blue",
       "assets/img/sprites/sprite_sheet/sprite_sheet_blue.png",
