@@ -64,6 +64,7 @@ export default class LobbyScene extends Phaser.Scene {
     const el1 = this.add.dom(0, 40, btn);
     container.add([el, el1]);
 
-    this.sound.play("music");
+    const music = this.sound.add("music");
+    music.play({loop: true});
   }
 }
