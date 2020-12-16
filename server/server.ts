@@ -10,12 +10,14 @@ import gamestate, {
   InventoryEntry,
   InventoryEntryI,
   makePlayer,
+  makeResource,
   makeTrap,
+  RANGES,
   resourceTypes,
   Team,
 } from "../src/gamestate";
 import { stringify } from "uuid";
-import { partition } from "lodash";
+import { partition, random, sampleSize, times } from "lodash";
 
 const server = express();
 
@@ -38,6 +40,30 @@ console.log(`server running on 6660`);
 const rooms: { [id: string]: GameState } = {};
 
 rooms["room1"] = gamestate();
+
+setInterval(
+  () =>
+    Object.entries(rooms).forEach(([roomID, room]: [string, GameState]) => {
+      const concated = room.status.blue.concat(room.status.red);
+      const reqs = sampleSize(concated, Math.floor(concated.length / 2));
+      const places = sampleSize(RANGES, reqs.length);
+      reqs.forEach(({ resourceType }, idx) => {
+        times(
+          random(3, Math.ceil(10 / resourceTypes[resourceType].maxHealth)),
+          () => {
+            const item = makeResource(
+              resourceTypes[resourceType],
+              places[idx].rangeX,
+              places[idx].rangeY
+            );
+            rooms[roomID].objects[item.id] = item;
+          }
+        );
+      });
+      io.to(roomID).emit("gameState", rooms[roomID]);
+    }),
+  20700
+);
 
 setInterval(
   () =>

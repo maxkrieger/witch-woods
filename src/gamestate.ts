@@ -31,17 +31,53 @@ export interface ResourceDefinition {
   maxHealth: number;
   spriteIndex: number;
   ability: Ability;
+}
+
+interface Range {
   rangeX: [number, number];
   rangeY: [number, number];
 }
+
+export const RANGES: Range[] = [
+  {
+    rangeX: [1200, 2200],
+    rangeY: [5080, 5800],
+  },
+  {
+    rangeX: [3838, 6000],
+    rangeY: [2962, 3500],
+  },
+  {
+    rangeX: [7800, 9000],
+    rangeY: [5100, 5800],
+  },
+  {
+    rangeX: [2525, 3970],
+    rangeY: [3775, 5500],
+  },
+  {
+    rangeX: [5970, 7480],
+    rangeY: [4130, 5564],
+  },
+  {
+    rangeX: [3838, 6000],
+    rangeY: [2962, 3736],
+  },
+  {
+    rangeX: [5615, 6500],
+    rangeY: [75, 680],
+  },
+  {
+    rangeX: [3480, 4200],
+    rangeY: [75, 680],
+  },
+];
 
 export const MushredResource: ResourceDefinition = {
   type: ResourceType.MUSHRED,
   maxHealth: 5,
   spriteIndex: 0,
   ability: Ability.TELEPORT,
-  rangeX: [0, 724],
-  rangeY: [700, 1500],
 };
 
 export const MushorangeResource: ResourceDefinition = {
@@ -49,8 +85,6 @@ export const MushorangeResource: ResourceDefinition = {
   maxHealth: 10,
   spriteIndex: 1,
   ability: Ability.ICE_TRAP,
-  rangeX: [1200, 2200],
-  rangeY: [5080, 5800],
 };
 
 export const Flower1Resource: ResourceDefinition = {
@@ -58,8 +92,6 @@ export const Flower1Resource: ResourceDefinition = {
   maxHealth: 5,
   spriteIndex: 2,
   ability: Ability.TELEPORT,
-  rangeX: [9400, 10000],
-  rangeY: [630, 1525],
 };
 
 export const IvyResource: ResourceDefinition = {
@@ -67,9 +99,6 @@ export const IvyResource: ResourceDefinition = {
   maxHealth: 4,
   spriteIndex: 3,
   ability: Ability.TELEPORT,
-
-  rangeX: [3838, 6000],
-  rangeY: [2962, 3736],
 };
 
 export const MushstackResource: ResourceDefinition = {
@@ -77,9 +106,6 @@ export const MushstackResource: ResourceDefinition = {
   maxHealth: 3,
   spriteIndex: 4,
   ability: Ability.SEEING_EYE,
-
-  rangeX: [7800, 9000],
-  rangeY: [5100, 5800],
 };
 
 export const MushwhiteResource: ResourceDefinition = {
@@ -87,9 +113,6 @@ export const MushwhiteResource: ResourceDefinition = {
   maxHealth: 10,
   spriteIndex: 5,
   ability: Ability.ICE_TRAP,
-
-  rangeX: [2525, 3970],
-  rangeY: [3775, 5500],
 };
 
 export const Flower2Resource: ResourceDefinition = {
@@ -97,19 +120,13 @@ export const Flower2Resource: ResourceDefinition = {
   maxHealth: 2,
   spriteIndex: 6,
   ability: Ability.SEEING_EYE,
-
-  rangeX: [5970, 7480],
-  rangeY: [4130, 5564],
 };
 
 export const RoseResource: ResourceDefinition = {
   type: ResourceType.ROSE,
-  maxHealth: 2,
+  maxHealth: 9,
   spriteIndex: 7,
-  ability: Ability.SEEING_EYE,
-
-  rangeX: [3838, 6000],
-  rangeY: [2962, 3736],
+  ability: Ability.ICE_TRAP,
 };
 
 // REGENERATE RESOURCES
@@ -222,10 +239,14 @@ export interface GameState {
   status: Status;
 }
 
-const makeResource = (definition: ResourceDefinition): GameObject => ({
+export const makeResource = (
+  definition: ResourceDefinition,
+  rangeX,
+  rangeY
+): GameObject => ({
   id: v4(),
-  x: random(definition.rangeX[0], definition.rangeX[1]),
-  y: random(definition.rangeY[0], definition.rangeY[1]),
+  x: random(rangeX[0], rangeX[1]),
+  y: random(rangeY[0], rangeY[1]),
   resourceType: definition.type,
   health: definition.maxHealth,
   channeling: null,
@@ -233,7 +254,7 @@ const makeResource = (definition: ResourceDefinition): GameObject => ({
 
 const makeResourceReq = (type: ResourceType): ResourceRequirement => ({
   quantity: 0,
-  quantityRequired: random(2, 10),
+  quantityRequired: Math.ceil(75 / resourceTypes[type].maxHealth),
   resourceType: type,
 });
 
@@ -272,29 +293,29 @@ export default (): GameState => {
       winner: "NONE",
     },
   };
-  times(12, () => makeResource(MushredResource)).forEach(
-    (item) => (init.objects[item.id] = item)
-  );
-  times(12, () => makeResource(MushorangeResource)).forEach(
-    (item) => (init.objects[item.id] = item)
-  );
-  times(12, () => makeResource(Flower1Resource)).forEach(
-    (item) => (init.objects[item.id] = item)
-  );
-  times(12, () => makeResource(IvyResource)).forEach(
-    (item) => (init.objects[item.id] = item)
-  );
-  times(12, () => makeResource(MushstackResource)).forEach(
-    (item) => (init.objects[item.id] = item)
-  );
-  times(12, () => makeResource(MushwhiteResource)).forEach(
-    (item) => (init.objects[item.id] = item)
-  );
-  times(12, () => makeResource(Flower2Resource)).forEach(
-    (item) => (init.objects[item.id] = item)
-  );
-  times(12, () => makeResource(RoseResource)).forEach(
-    (item) => (init.objects[item.id] = item)
-  );
+  const redPlaces = sampleSize(RANGES, redReqs.length);
+  redReqs.forEach((r, idx) => {
+    const place = redPlaces[idx];
+    times(Math.ceil(25 / resourceTypes[r.resourceType].maxHealth), () => {
+      const item = makeResource(
+        resourceTypes[r.resourceType],
+        place.rangeX,
+        place.rangeY
+      );
+      init.objects[item.id] = item;
+    });
+  });
+  const bluePlaces = sampleSize(RANGES, redReqs.length);
+  blueReqs.forEach((r, idx) => {
+    const place = bluePlaces[idx];
+    times(Math.ceil(25 / resourceTypes[r.resourceType].maxHealth), () => {
+      const item = makeResource(
+        resourceTypes[r.resourceType],
+        place.rangeX,
+        place.rangeY
+      );
+      init.objects[item.id] = item;
+    });
+  });
   return init;
 };
