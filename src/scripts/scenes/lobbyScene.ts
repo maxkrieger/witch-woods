@@ -5,7 +5,7 @@ export default class LobbyScene extends Phaser.Scene {
   myName: string;
   message = "";
   preload() {
-    this.load.audio("music", "assets/sound/ambient.m4a");
+    this.load.audio("music", "assets/sound/atmoLoading.m4a");
   }
   init({ name, message }: any) {
     if (name) {
